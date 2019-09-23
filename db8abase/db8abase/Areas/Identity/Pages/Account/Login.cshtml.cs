@@ -89,19 +89,19 @@ namespace db8abase.Areas.Identity.Pages.Account
                     var judgeRole = _context.Roles.FirstOrDefault(r => r.Name == "Judge");
                     if (currentUserRoleIdObject.RoleId == tournamentDirectorRole.Id)
                     {
-                        return RedirectToAction("Index", "Managers");
+                        return RedirectToAction("Index", "TournamentDirectors");
                     }
                     else if (currentUserRoleIdObject.RoleId == coachRole.Id)
                     {
-                        return RedirectToAction("Index", "Residents");
+                        return RedirectToAction("Index", "Coaches");
                     }
                     else if (currentUserRoleIdObject.RoleId == debaterRole.Id)
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Debaters");
                     }
                     else if (currentUserRoleIdObject.RoleId == judgeRole.Id)
                     {
-                        return RedirectToAction("UserIndex", "Home");
+                        return RedirectToAction("UserIndex", "Judges");
                     }
                 }
                 if (result.RequiresTwoFactor)

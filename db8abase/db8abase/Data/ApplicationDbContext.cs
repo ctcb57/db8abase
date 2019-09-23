@@ -14,5 +14,9 @@ namespace db8abase.Data
         {
         }
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
+
+        public DbSet<TournamentDirector> TournamentDirector { get; set; }
+
+        public DbSet<School> School { get; set; }
     }
 }
