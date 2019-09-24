@@ -10,22 +10,22 @@ using db8abase.Models;
 
 namespace db8abase.Controllers
 {
-    public class CoachesController : Controller
+    public class DebatersController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CoachesController(ApplicationDbContext context)
+        public DebatersController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Coaches
+        // GET: Debaters
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
-        // GET: Coaches/Details/5
+        // GET: Debaters/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,41 +33,41 @@ namespace db8abase.Controllers
                 return NotFound();
             }
 
-            var coach = await _context.Coach
-                .FirstOrDefaultAsync(m => m.CoachId == id);
-            if (coach == null)
+            var debater = await _context.Debater
+                .FirstOrDefaultAsync(m => m.DebaterId == id);
+            if (debater == null)
             {
                 return NotFound();
             }
 
-            return View(coach);
+            return View(debater);
         }
 
-        // GET: Coaches/Create
+        // GET: Debaters/Create
         public IActionResult Create()
         {
-            Coach coach = new Coach();
-            return View(coach);
+            Debater debater = new Debater();
+            return View(debater);
         }
 
-        // POST: Coaches/Create
+        // POST: Debaters/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId")] Coach coach, string Id)
+        public async Task<IActionResult> Create([Bind("DebaterId,FirstName,LastName,Email,PhoneNumber,CoachId,PartnerId,SchoolId,IndividualRoundSpeakerPoints,IndividualTournamentSpeakerPoints,AnnualAverageSpeakerPoints,ApplicationUserId")] Debater debater, string Id)
         {
             if (ModelState.IsValid)
             {
-                coach.ApplicationUserId = Id;
-                _context.Add(coach);
+                debater.ApplicationUserId = Id;
+                _context.Add(debater);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(coach);
+            return View(debater);
         }
 
-        // GET: Coaches/Edit/5
+        // GET: Debaters/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +75,22 @@ namespace db8abase.Controllers
                 return NotFound();
             }
 
-            var coach = await _context.Coach.FindAsync(id);
-            if (coach == null)
+            var debater = await _context.Debater.FindAsync(id);
+            if (debater == null)
             {
                 return NotFound();
             }
-            return View(coach);
+            return View(debater);
         }
 
-        // POST: Coaches/Edit/5
+        // POST: Debaters/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId")] Coach coach)
+        public async Task<IActionResult> Edit(int id, [Bind("DebaterId,FirstName,LastName,Email,PhoneNumber,CoachId,PartnerId,SchoolId,IndividualRoundSpeakerPoints,IndividualTournamentSpeakerPoints,AnnualAverageSpeakerPoints,ApplicationUserId")] Debater debater)
         {
-            if (id != coach.CoachId)
+            if (id != debater.DebaterId)
             {
                 return NotFound();
             }
@@ -99,12 +99,12 @@ namespace db8abase.Controllers
             {
                 try
                 {
-                    _context.Update(coach);
+                    _context.Update(debater);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CoachExists(coach.CoachId))
+                    if (!DebaterExists(debater.DebaterId))
                     {
                         return NotFound();
                     }
@@ -115,10 +115,10 @@ namespace db8abase.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(coach);
+            return View(debater);
         }
 
-        // GET: Coaches/Delete/5
+        // GET: Debaters/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,30 +126,30 @@ namespace db8abase.Controllers
                 return NotFound();
             }
 
-            var coach = await _context.Coach
-                .FirstOrDefaultAsync(m => m.CoachId == id);
-            if (coach == null)
+            var debater = await _context.Debater
+                .FirstOrDefaultAsync(m => m.DebaterId == id);
+            if (debater == null)
             {
                 return NotFound();
             }
 
-            return View(coach);
+            return View(debater);
         }
 
-        // POST: Coaches/Delete/5
+        // POST: Debaters/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var coach = await _context.Coach.FindAsync(id);
-            _context.Coach.Remove(coach);
+            var debater = await _context.Debater.FindAsync(id);
+            _context.Debater.Remove(debater);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CoachExists(int id)
+        private bool DebaterExists(int id)
         {
-            return _context.Coach.Any(e => e.CoachId == id);
+            return _context.Debater.Any(e => e.DebaterId == id);
         }
     }
 }

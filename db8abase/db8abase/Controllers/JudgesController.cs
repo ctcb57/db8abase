@@ -10,22 +10,22 @@ using db8abase.Models;
 
 namespace db8abase.Controllers
 {
-    public class CoachesController : Controller
+    public class JudgesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CoachesController(ApplicationDbContext context)
+        public JudgesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Coaches
+        // GET: Judges
         public async Task<IActionResult> Index()
         {
             return View();
         }
 
-        // GET: Coaches/Details/5
+        // GET: Judges/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -33,41 +33,41 @@ namespace db8abase.Controllers
                 return NotFound();
             }
 
-            var coach = await _context.Coach
-                .FirstOrDefaultAsync(m => m.CoachId == id);
-            if (coach == null)
+            var judge = await _context.Judge
+                .FirstOrDefaultAsync(m => m.JudgeId == id);
+            if (judge == null)
             {
                 return NotFound();
             }
 
-            return View(coach);
+            return View(judge);
         }
 
-        // GET: Coaches/Create
+        // GET: Judges/Create
         public IActionResult Create()
         {
-            Coach coach = new Coach();
-            return View(coach);
+            Judge judge = new Judge();
+            return View(judge);
         }
 
-        // POST: Coaches/Create
+        // POST: Judges/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId")] Coach coach, string Id)
+        public async Task<IActionResult> Create([Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge, string Id)
         {
             if (ModelState.IsValid)
             {
-                coach.ApplicationUserId = Id;
-                _context.Add(coach);
+                judge.ApplicationUserId = Id;
+                _context.Add(judge);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(coach);
+            return View(judge);
         }
 
-        // GET: Coaches/Edit/5
+        // GET: Judges/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -75,22 +75,22 @@ namespace db8abase.Controllers
                 return NotFound();
             }
 
-            var coach = await _context.Coach.FindAsync(id);
-            if (coach == null)
+            var judge = await _context.Judge.FindAsync(id);
+            if (judge == null)
             {
                 return NotFound();
             }
-            return View(coach);
+            return View(judge);
         }
 
-        // POST: Coaches/Edit/5
+        // POST: Judges/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId")] Coach coach)
+        public async Task<IActionResult> Edit(int id, [Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge)
         {
-            if (id != coach.CoachId)
+            if (id != judge.JudgeId)
             {
                 return NotFound();
             }
@@ -99,12 +99,12 @@ namespace db8abase.Controllers
             {
                 try
                 {
-                    _context.Update(coach);
+                    _context.Update(judge);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CoachExists(coach.CoachId))
+                    if (!JudgeExists(judge.JudgeId))
                     {
                         return NotFound();
                     }
@@ -115,10 +115,10 @@ namespace db8abase.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(coach);
+            return View(judge);
         }
 
-        // GET: Coaches/Delete/5
+        // GET: Judges/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -126,30 +126,30 @@ namespace db8abase.Controllers
                 return NotFound();
             }
 
-            var coach = await _context.Coach
-                .FirstOrDefaultAsync(m => m.CoachId == id);
-            if (coach == null)
+            var judge = await _context.Judge
+                .FirstOrDefaultAsync(m => m.JudgeId == id);
+            if (judge == null)
             {
                 return NotFound();
             }
 
-            return View(coach);
+            return View(judge);
         }
 
-        // POST: Coaches/Delete/5
+        // POST: Judges/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var coach = await _context.Coach.FindAsync(id);
-            _context.Coach.Remove(coach);
+            var judge = await _context.Judge.FindAsync(id);
+            _context.Judge.Remove(judge);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CoachExists(int id)
+        private bool JudgeExists(int id)
         {
-            return _context.Coach.Any(e => e.CoachId == id);
+            return _context.Judge.Any(e => e.JudgeId == id);
         }
     }
 }

@@ -1,21 +1,19 @@
-﻿@model db8abase.Models.Coach
+﻿@model db8abase.Models.Judge
 
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_LayoutCoach.cshtml";
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutJudge.cshtml";
 }
 
-<h1>Create New Coach Account</h1>
+<h1>Edit</h1>
 
-
+<h4>Judge</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CoachId" />
-            <input type="hidden" asp-for="ApplicationUserId" />
-            <input type="hidden" asp-for="Balance" />
+            <input type="hidden" asp-for="JudgeId" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -37,7 +35,22 @@
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <label asp-for="JudgingPhilosophy" class="control-label"></label>
+                <input asp-for="JudgingPhilosophy" class="form-control" />
+                <span asp-validation-for="JudgingPhilosophy" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SchoolId" class="control-label"></label>
+                <input asp-for="SchoolId" class="form-control" />
+                <span asp-validation-for="SchoolId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApplicationUserId" class="control-label"></label>
+                <input asp-for="ApplicationUserId" class="form-control" />
+                <span asp-validation-for="ApplicationUserId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>

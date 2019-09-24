@@ -228,6 +228,8 @@ namespace db8abase.Migrations
 
                     b.Property<int>("PhoneNumber");
 
+                    b.Property<int>("SchoolId");
+
                     b.HasKey("CoachId");
 
                     b.ToTable("Coach");
@@ -408,6 +410,8 @@ namespace db8abase.Migrations
                     b.Property<string>("LastName");
 
                     b.Property<string>("Message");
+
+                    b.Property<int>("SchoolId");
 
                     b.Property<int?>("TournamentId");
 

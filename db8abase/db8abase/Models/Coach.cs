@@ -21,5 +21,7 @@ namespace db8abase.Models
         public double Balance { get; set; }
         [ForeignKey("User Id")]
         public string ApplicationUserId { get; set; }
+        [ForeignKey("School Id")]
+        public int SchoolId { get; set; }
     }
 }

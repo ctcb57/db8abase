@@ -53,6 +53,18 @@ namespace db8abase.Controllers
             return View(TournamentDirector);
         }
 
+        [HttpPost]
+        public IActionResult SelectSchool(int Id)
+        {
+            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == Id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            currentDirector.SchoolId = selectedSchool.SchoolId;
+            _context.Attach(currentDirector);
+            _context.SaveChanges();
+            return RedirectToAction("GetTournamentListing", "Home");
+        }
+
         // POST: TournamentDirectors/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -68,6 +80,21 @@ namespace db8abase.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(tournamentDirector);
+        }
+
+        // GET: CreateTournament
+        public IActionResult CreateTournament()
+        {
+            Tournament tournament = new Tournament();
+            return View(tournament);
+        }
+
+        [HttpPost]
+        public IActionResult CreateTournament([Bind("TournamentId,Name,School,NumberOfRounds,NumberOfEliminationRounds,EntryFee,TournamentDate,TeamLimit")] Tournament tournament)
+        {
+            _context.Add(tournament);
+            _context.SaveChanges();
+            return RedirectToAction("GetTournamentListing", "Home");
         }
 
         // GET: TournamentDirectors/Edit/5

@@ -138,13 +138,13 @@ namespace db8abase.Areas.Identity.Pages.Account
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.Debater);
                         var role = await _userManager.GetRolesAsync(user);
-                        return RedirectToAction("Index", "Debaters", new { id = user.Id });
+                        return RedirectToAction("Create", "Debaters", new { id = user.Id });
                     }
                     if (user.Role == "Judge")
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.Judge);
                         var role = await _userManager.GetRolesAsync(user);
-                        return RedirectToAction("Index", "Judges", new { id = user.Id });
+                        return RedirectToAction("Create", "Judges", new { id = user.Id });
                     }
                     foreach (var error in result.Errors)
                     {

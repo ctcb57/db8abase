@@ -80,7 +80,8 @@ namespace db8abase.Migrations
                     Email = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<int>(nullable: false),
                     Balance = table.Column<double>(nullable: false),
-                    ApplicationUserId = table.Column<string>(nullable: true)
+                    ApplicationUserId = table.Column<string>(nullable: true),
+                    SchoolId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -343,7 +344,8 @@ namespace db8abase.Migrations
                     Email = table.Column<string>(nullable: true),
                     Message = table.Column<string>(nullable: true),
                     TournamentId = table.Column<int>(nullable: true),
-                    ApplicationUserId = table.Column<string>(nullable: true)
+                    ApplicationUserId = table.Column<string>(nullable: true),
+                    SchoolId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

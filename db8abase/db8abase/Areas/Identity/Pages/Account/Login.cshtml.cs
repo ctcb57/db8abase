@@ -101,7 +101,7 @@ namespace db8abase.Areas.Identity.Pages.Account
                     }
                     else if (currentUserRoleIdObject.RoleId == judgeRole.Id)
                     {
-                        return RedirectToAction("UserIndex", "Judges");
+                        return RedirectToAction("Index", "Judges");
                     }
                 }
                 if (result.RequiresTwoFactor)

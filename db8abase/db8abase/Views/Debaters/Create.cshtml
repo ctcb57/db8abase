@@ -1,21 +1,25 @@
-﻿@model db8abase.Models.Coach
+﻿@model db8abase.Models.Debater
 
 @{
     ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_LayoutCoach.cshtml";
+    Layout = "~/Views/Shared/_LayoutDebater.cshtml";
 }
 
-<h1>Create New Coach Account</h1>
+<h1>Create</h1>
 
-
+<h4>Debater</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="CoachId" />
+            <input type="hidden" asp-for="DebaterId" />
             <input type="hidden" asp-for="ApplicationUserId" />
-            <input type="hidden" asp-for="Balance" />
+            <input type="hidden" asp-for="PartnerId" />
+            <input type="hidden" asp-for="SchoolId" />
+            <input type="hidden" asp-for="IndividualRoundSpeakerPoints" />
+            <input type="hidden" asp-for="IndividualTournamentSpeakerPoints" />
+            <input type="hidden" asp-for="AnnualAverageSpeakerPoints" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
