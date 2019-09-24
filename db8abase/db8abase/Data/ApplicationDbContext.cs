@@ -18,5 +18,12 @@ namespace db8abase.Data
         public DbSet<TournamentDirector> TournamentDirector { get; set; }
 
         public DbSet<School> School { get; set; }
+        public DbSet<Coach> Coach { get; set; }
+        public DbSet<Debater> Debater { get; set; }
+        public DbSet<Tournament> Tournament { get; set; }
+        public DbSet<Team> Team { get; set; }
+        public DbSet<Judge> Judge { get; set; }
+        public DbSet<IndividualTeam> IndividualTeam { get; set; }
+
     }
 }
