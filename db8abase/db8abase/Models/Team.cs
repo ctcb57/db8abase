@@ -7,19 +7,15 @@ using System.Threading.Tasks;
 
 namespace db8abase.Models
 {
-    public class School
+    public class Team
     {
         [Key]
+        public int TeamId { get; set; }
+        [ForeignKey("School Id")]
         public int SchoolId { get; set; }
-        public string Name { get; set; }
-
-        public Address Address { get; set; }
-        [ForeignKey("Tournament Director Id")]
-        public int TournamentDirectorId { get; set; }
         [ForeignKey("Coach Id")]
         public int CoachId { get; set; }
         [NotMapped]
-        public List<Room> Rooms { get; set; }
-
+        public List<IndividualTeam> TeamList { get; set; }
     }
 }
