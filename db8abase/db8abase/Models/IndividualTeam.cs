@@ -25,6 +25,8 @@ namespace db8abase.Models
         public int TocBids { get; set; }
         [ForeignKey("Coach Id")]
         public int CoachId { get; set; }
+        [ForeignKey("School Id")]
+        public int SchoolId { get; set; }
         [NotMapped]
         public List<IndividualTeam> TeamsFacedAtTournament { get; set; }
         [NotMapped]

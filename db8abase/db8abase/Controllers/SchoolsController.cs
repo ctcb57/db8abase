@@ -62,7 +62,7 @@ namespace db8abase.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SchoolId,Name,TournamentDirectorId,CoachId")] School school)
+        public async Task<IActionResult> Create([Bind("SchoolId,Name,TournamentDirectorId,CoachId,Address")] School school)
         {
             if (ModelState.IsValid)
             {
@@ -74,7 +74,11 @@ namespace db8abase.Controllers
                 {
                     var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
                     school.TournamentDirectorId = currentDirector.TournamentDirectorId;
+                    Address address = new Address();
+                    address = school.Address;
+                    address.Country = "USA";
                     _context.Add(school);
+                    _context.Add(address);
                     await _context.SaveChangesAsync();
                     currentDirector.SchoolId = school.SchoolId;
                     _context.Attach(currentDirector);
@@ -85,7 +89,11 @@ namespace db8abase.Controllers
                 {
                     var currentCoach = _context.Coach.FirstOrDefault(c => c.ApplicationUserId == currentUserId);
                     school.CoachId = currentCoach.CoachId;
+                    Address address = new Address();
+                    address = school.Address;
+                    address.Country = "USA";
                     _context.Add(school);
+                    _context.Add(address);
                     await _context.SaveChangesAsync();
                     currentCoach.SchoolId = school.SchoolId;
                     _context.Attach(currentCoach);
@@ -99,6 +107,7 @@ namespace db8abase.Controllers
             }
             return View(school);
         }
+
 
         // GET: Schools/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -145,6 +145,25 @@ namespace db8abase.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TournamentDirector",
+                columns: table => new
+                {
+                    TournamentDirectorId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    Message = table.Column<string>(nullable: true),
+                    TournamentId = table.Column<int>(nullable: false),
+                    ApplicationUserId = table.Column<string>(nullable: true),
+                    SchoolId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TournamentDirector", x => x.TournamentDirectorId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "School",
                 columns: table => new
                 {
@@ -289,7 +308,8 @@ namespace db8abase.Migrations
                     TournamentAffirmativeRounds = table.Column<int>(nullable: false),
                     TournamentNegativeRounds = table.Column<int>(nullable: false),
                     TocBids = table.Column<int>(nullable: false),
-                    CoachId = table.Column<int>(nullable: false)
+                    CoachId = table.Column<int>(nullable: false),
+                    SchoolId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,31 +350,6 @@ namespace db8abase.Migrations
                         column: x => x.SchoolId,
                         principalTable: "School",
                         principalColumn: "SchoolId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TournamentDirector",
-                columns: table => new
-                {
-                    TournamentDirectorId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(nullable: true),
-                    Message = table.Column<string>(nullable: true),
-                    TournamentId = table.Column<int>(nullable: true),
-                    ApplicationUserId = table.Column<string>(nullable: true),
-                    SchoolId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TournamentDirector", x => x.TournamentDirectorId);
-                    table.ForeignKey(
-                        name: "FK_TournamentDirector_Tournament_TournamentId",
-                        column: x => x.TournamentId,
-                        principalTable: "Tournament",
-                        principalColumn: "TournamentId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -416,11 +411,6 @@ namespace db8abase.Migrations
                 name: "IX_Tournament_SchoolId",
                 table: "Tournament",
                 column: "SchoolId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TournamentDirector_TournamentId",
-                table: "TournamentDirector",
-                column: "TournamentId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -453,6 +443,9 @@ namespace db8abase.Migrations
                 name: "Team");
 
             migrationBuilder.DropTable(
+                name: "Tournament");
+
+            migrationBuilder.DropTable(
                 name: "TournamentDirector");
 
             migrationBuilder.DropTable(
@@ -463,9 +456,6 @@ namespace db8abase.Migrations
 
             migrationBuilder.DropTable(
                 name: "Debater");
-
-            migrationBuilder.DropTable(
-                name: "Tournament");
 
             migrationBuilder.DropTable(
                 name: "School");

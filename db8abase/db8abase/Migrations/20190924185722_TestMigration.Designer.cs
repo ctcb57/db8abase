@@ -10,7 +10,7 @@ using db8abase.Data;
 namespace db8abase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190924174817_TestMigration")]
+    [Migration("20190924185722_TestMigration")]
     partial class TestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -288,6 +288,8 @@ namespace db8abase.Migrations
 
                     b.Property<int?>("FirstSpeakerDebaterId");
 
+                    b.Property<int>("SchoolId");
+
                     b.Property<int?>("SecondSpeakerDebaterId");
 
                     b.Property<int>("SingleTournamentLosses");
@@ -415,11 +417,9 @@ namespace db8abase.Migrations
 
                     b.Property<int>("SchoolId");
 
-                    b.Property<int?>("TournamentId");
+                    b.Property<int>("TournamentId");
 
                     b.HasKey("TournamentDirectorId");
-
-                    b.HasIndex("TournamentId");
 
                     b.ToTable("TournamentDirector");
                 });
@@ -503,13 +503,6 @@ namespace db8abase.Migrations
                     b.HasOne("db8abase.Models.School", "School")
                         .WithMany()
                         .HasForeignKey("SchoolId");
-                });
-
-            modelBuilder.Entity("db8abase.Models.TournamentDirector", b =>
-                {
-                    b.HasOne("db8abase.Models.Tournament", "Tournament")
-                        .WithMany()
-                        .HasForeignKey("TournamentId");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,13 +2,13 @@
 
 @{
     ViewData["Title"] = "GetListOfSchools";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <br />
 <br />
 <h1 style="text-align: center; text-decoration: underline">Select Tournament Location</h1>
 <br />
-<h3>If you school is not listed in the table, click the create button at the bottom of the page</h3>
+<h5>If your school is not listed in the table, click the create button at the bottom of the page</h5>
+<br />
 <table class="table table-hover">
     <thead>
         <tr class="table-primary">
@@ -25,13 +25,16 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </th>
             <td>
-                <a asp-area="" asp-controller="TournamentDirectors" asp-action="SelectSchool" asp-route-id="@item.SchoolId">Select</a> 
+                <a asp-controller="TournamentDirectors" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
+                
+                @*<a asp-area="" asp-controller="TournamentDirectors" asp-action="SelectSchool" asp-route-id="@item.SchoolId">Select</a>*@ 
             </td>
         </tr>
 }
     </tbody>
 </table>
-
+<br />
+<br />
 <p>
     <a asp-area="" asp-controller="Schools" asp-action="Create">Create New School</a>
 </p>

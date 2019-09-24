@@ -2,7 +2,6 @@
 
 @{
     ViewData["Title"] = "GetTournamentListing";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <br />
 <br />
@@ -31,7 +30,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-action="Details" asp-route-id="@item.TournamentId">Details</a> 
+                <a asp-action="Details" asp-route-id="@item.TournamentId" style="color:#087485">Details</a> 
             </td>
         </tr>
 }

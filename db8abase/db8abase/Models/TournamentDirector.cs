@@ -17,7 +17,8 @@ namespace db8abase.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Message { get; set; }
-        public Tournament Tournament { get; set; }
+        [ForeignKey("Tournament Id")]
+        public int TournamentId { get; set; }
         [ForeignKey("User Id")]
         public string ApplicationUserId { get; set; }
         [ForeignKey("School Id")]

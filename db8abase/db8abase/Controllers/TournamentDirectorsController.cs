@@ -53,14 +53,25 @@ namespace db8abase.Controllers
             return View(TournamentDirector);
         }
 
-        [HttpPost]
+        // GET: TournamentDirectors/SelectSchool
         public IActionResult SelectSchool(int Id)
         {
-            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == Id);
+            School school = _context.School.FirstOrDefault(s => s.SchoolId == Id);
+            return View(school);
+        }
+        // POST: TournamentDirectors/SelectSchool
+        [HttpPost]
+        public IActionResult SelectSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
+        {
+            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            currentDirector.SchoolId = selectedSchool.SchoolId;
-            _context.Attach(currentDirector);
+            var tournamentToAdd = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            tournamentDirector = currentDirector;
+            tournamentDirector.SchoolId = selectedSchool.SchoolId;
+            tournamentToAdd.School = selectedSchool;
+            _context.Attach(tournamentDirector);
+            _context.Attach(tournamentToAdd);
             _context.SaveChanges();
             return RedirectToAction("GetTournamentListing", "Home");
         }
@@ -94,7 +105,12 @@ namespace db8abase.Controllers
         {
             _context.Add(tournament);
             _context.SaveChanges();
-            return RedirectToAction("GetTournamentListing", "Home");
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            currentDirector.TournamentId = tournament.TournamentId;
+            _context.Attach(currentDirector);
+            _context.SaveChanges();
+            return RedirectToAction("GetListOfSchools", "Schools");
         }
 
         // GET: TournamentDirectors/Edit/5

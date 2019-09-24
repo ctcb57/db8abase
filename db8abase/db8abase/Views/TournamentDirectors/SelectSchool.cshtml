@@ -1,0 +1,17 @@
+﻿@model db8abase.Models.School
+
+@{
+    ViewData["Title"] = "SelectSchool";
+}
+<br />
+<br />
+<h3>Click the button to confirm this school selection</h3>
+<br />
+<p>School: @Html.DisplayFor(model => model.Name)</p>
+<br />
+<br />
+<div>
+    <form asp-area="" asp-controller="TournamentDirectors" asp-action="SelectSchool">
+        <input type="submit" value="Confirm" class="btn btn-primary" asp-for="SchoolId" />
+    </form>
+</div>
