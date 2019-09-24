@@ -1,7 +1,7 @@
 ﻿@{
     if (this.User.IsInRole("TournamentDirector"))
     {
-        Layout = "~/Views/Shared/_LayoutTournamentDirector.cshtml";
+        Layout = "~/Views/Shared/_LayoutDirector.cshtml";
     }
     else if (this.User.IsInRole("Coach"))
     {
@@ -11,7 +11,7 @@
     {
         Layout = "~/Views/Shared/_LayoutJudge.cshtml";
     }
-        else if (this.User.IsInRole("Debater"))
+    else if (this.User.IsInRole("Debater"))
     {
         Layout = "~/Views/Shared/_LayoutDebater.cshtml";
     }

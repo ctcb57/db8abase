@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,5 +18,7 @@ namespace db8abase.Models
         public string Email { get; set; }
         public string Message { get; set; }
         public Tournament Tournament { get; set; }
+        [ForeignKey("User Id")]
+        public string ApplicationUserId { get; set; }
     }
 }

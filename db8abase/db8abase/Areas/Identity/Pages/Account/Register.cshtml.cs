@@ -80,7 +80,7 @@ namespace db8abase.Areas.Identity.Pages.Account
             ReturnUrl = returnUrl;
             UserRoles = new List<SelectListItem>()
             {
-                new SelectListItem {Value = "TournamentDirector", Text = "Tournament Director"},
+                new SelectListItem {Value = "TournamentDirector", Text = "TournamentDirector"},
                 new SelectListItem {Value = "Coach", Text = "Coach"},
                 new SelectListItem {Value = "Debater", Text = "Debater"},
                 new SelectListItem {Value = "Judge", Text = "Judge"},
@@ -126,13 +126,13 @@ namespace db8abase.Areas.Identity.Pages.Account
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.TournamentDirector);
                         var role = await _userManager.GetRolesAsync(user);
-                        return RedirectToAction("Index", "TournamentDirectors", new { id = user.Id });
+                        return RedirectToAction("Create", "TournamentDirectors", new { id = user.Id });
                     }
                     if (user.Role == "Coach")
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.Coach);
                         var role = await _userManager.GetRolesAsync(user);
-                        return RedirectToAction("Index", "Coaches", new { id = user.Id });
+                        return RedirectToAction("Create", "Coaches", new { id = user.Id });
                     }
                     if (user.Role == "Debater")
                     {

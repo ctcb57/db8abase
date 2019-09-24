@@ -27,5 +27,7 @@ namespace db8abase.Models
         public double? IndividualRoundSpeakerPoints { get; set; }
         public double IndividualTournamentSpeakerPoints { get; set; }
         public double AnnualAverageSpeakerPoints { get; set; }
+        [ForeignKey("User Id")]
+        public string ApplicationUserId { get; set; }
     }
 }

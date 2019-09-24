@@ -10,8 +10,8 @@ using db8abase.Data;
 namespace db8abase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190924022550_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20190924124829_TestMigration")]
+    partial class TestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -218,6 +218,8 @@ namespace db8abase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("ApplicationUserId");
+
                     b.Property<double>("Balance");
 
                     b.Property<string>("Email");
@@ -240,6 +242,8 @@ namespace db8abase.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("AnnualAverageSpeakerPoints");
+
+                    b.Property<string>("ApplicationUserId");
 
                     b.Property<int>("CoachId");
 
@@ -308,6 +312,8 @@ namespace db8abase.Migrations
                     b.Property<int>("JudgeId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApplicationUserId");
 
                     b.Property<string>("Email");
 
@@ -394,6 +400,8 @@ namespace db8abase.Migrations
                     b.Property<int>("TournamentDirectorId")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("ApplicationUserId");
 
                     b.Property<string>("Email");
 

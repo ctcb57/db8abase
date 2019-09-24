@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace db8abase.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class TestMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -79,7 +79,8 @@ namespace db8abase.Migrations
                     LastName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<int>(nullable: false),
-                    Balance = table.Column<double>(nullable: false)
+                    Balance = table.Column<double>(nullable: false),
+                    ApplicationUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -101,7 +102,8 @@ namespace db8abase.Migrations
                     SchoolId = table.Column<int>(nullable: false),
                     IndividualRoundSpeakerPoints = table.Column<double>(nullable: true),
                     IndividualTournamentSpeakerPoints = table.Column<double>(nullable: false),
-                    AnnualAverageSpeakerPoints = table.Column<double>(nullable: false)
+                    AnnualAverageSpeakerPoints = table.Column<double>(nullable: false),
+                    ApplicationUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -119,7 +121,8 @@ namespace db8abase.Migrations
                     Email = table.Column<string>(nullable: true),
                     PhoneNumber = table.Column<int>(nullable: false),
                     JudgingPhilosophy = table.Column<string>(nullable: true),
-                    SchoolId = table.Column<int>(nullable: false)
+                    SchoolId = table.Column<int>(nullable: false),
+                    ApplicationUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -339,7 +342,8 @@ namespace db8abase.Migrations
                     LastName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
                     Message = table.Column<string>(nullable: true),
-                    TournamentId = table.Column<int>(nullable: true)
+                    TournamentId = table.Column<int>(nullable: true),
+                    ApplicationUserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
