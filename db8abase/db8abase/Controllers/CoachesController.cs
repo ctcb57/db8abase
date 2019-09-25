@@ -37,6 +37,19 @@ namespace db8abase.Controllers
             return View(currentTeam);
         }
 
+        // GET: Coaches/SelectSchool
+        public IActionResult SelectSchool([Bind("SchoolId")] Coach coach, int id)
+        {
+            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            coach = currentCoach;
+            coach.SchoolId = selectedSchool.SchoolId;
+            _context.Attach(coach);
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Coaches");
+        }
+
         // GET: Coaches/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -67,14 +80,14 @@ namespace db8abase.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId")] Coach coach, string Id)
+        public async Task<IActionResult> Create([Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId,SchoolId")] Coach coach, string Id)
         {
             if (ModelState.IsValid)
             {
                 coach.ApplicationUserId = Id;
                 _context.Add(coach);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("GetListOfSchools", "Schools");
             }
             return View(coach);
         }

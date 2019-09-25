@@ -76,6 +76,19 @@ namespace db8abase.Controllers
             return RedirectToAction("GetRoomsList", "TournamentDirectors");
         }
 
+        // GET: TournamentDirectors/SelectRegistrationSchool
+        public IActionResult SelectRegistrationSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
+        {
+            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            tournamentDirector = currentDirector;
+            tournamentDirector.SchoolId = selectedSchool.SchoolId;
+            _context.Attach(tournamentDirector);
+            _context.SaveChanges();
+            return RedirectToAction("Index", "TournamentDirectors");
+        }
+
         public IActionResult GetRoomsList()
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
@@ -111,14 +124,16 @@ namespace db8abase.Controllers
         [HttpPost]
         public IActionResult CreateTournament([Bind("TournamentId,Name,School,NumberOfRounds,NumberOfEliminationRounds,EntryFee,TournamentDate,TeamLimit")] Tournament tournament)
         {
-            _context.Add(tournament);
-            _context.SaveChanges();
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var directorSchool = _context.School.FirstOrDefault(s => s.SchoolId == currentDirector.SchoolId);
+            tournament.School = directorSchool;
+            _context.Add(tournament);
+            _context.SaveChanges();
             currentDirector.TournamentId = tournament.TournamentId;
             _context.Attach(currentDirector);
             _context.SaveChanges();
-            return RedirectToAction("GetListOfSchools", "Schools");
+            return RedirectToAction("GetRoomsList", "TournamentDirectors");
         }
 
         // GET: TournamentDirectors/Edit/5

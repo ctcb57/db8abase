@@ -25,9 +25,14 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </th>
             <td>
-                <a asp-controller="TournamentDirectors" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
-                
-                @*<a asp-area="" asp-controller="TournamentDirectors" asp-action="SelectSchool" asp-route-id="@item.SchoolId">Select</a>*@ 
+                @if (this.User.IsInRole("TournamentDirector"))
+                {
+                    <a asp-controller="TournamentDirectors" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
+                }
+                else if (this.User.IsInRole("Coach"))
+                {
+                    <a asp-controller="Coaches" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
+                }
             </td>
         </tr>
 }

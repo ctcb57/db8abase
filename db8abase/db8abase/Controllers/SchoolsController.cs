@@ -57,6 +57,7 @@ namespace db8abase.Controllers
             return View(school);
         }
 
+
         // POST: Schools/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -83,7 +84,7 @@ namespace db8abase.Controllers
                     currentDirector.SchoolId = school.SchoolId;
                     _context.Attach(currentDirector);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("GetRoomsList", "TournamentDirectors");
+                    return RedirectToAction("Index", "TournamentDirectors");
                 }
                 else if(currentUserRole.RoleId == coachRoleId.Id)
                 {
@@ -98,7 +99,7 @@ namespace db8abase.Controllers
                     currentCoach.SchoolId = school.SchoolId;
                     _context.Attach(currentCoach);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("GetTournamentListing", "Home");
+                    return RedirectToAction("Index", "Coaches");
                 }
                 else
                 {
