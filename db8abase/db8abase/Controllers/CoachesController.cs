@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
 using System.Security.Claims;
+using db8abase.Models.ViewModels;
 
 namespace db8abase.Controllers
 {
@@ -35,6 +36,28 @@ namespace db8abase.Controllers
             var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
             var currentTeam = _context.Debater.Where(d => d.SchoolId == currentCoach.SchoolId).ToList();
             return View(currentTeam);
+        }
+        // GET: Coaches/TournamentManagement
+        public IActionResult TournamentManagement()
+        {
+            var tournamentListing = _context.Tournament.ToList();
+            return View(tournamentListing);
+        }
+
+        // GET: Coaches/EnterTournament
+        public ViewResult EnterTeams(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            List<Debater> debaters = _context.Debater.Where(d => d.SchoolId == currentCoach.SchoolId).ToList();
+
+            CoachesEnterTeamsViewModel coachesEnterTeamsViewModel = new CoachesEnterTeamsViewModel()
+            {
+                Tournament = tournament,
+                Debaters = debaters,
+            };
+            return View(coachesEnterTeamsViewModel);
         }
 
         // GET: Coaches/SelectSchool

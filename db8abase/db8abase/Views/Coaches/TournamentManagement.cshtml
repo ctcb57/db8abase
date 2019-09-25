@@ -1,0 +1,60 @@
+﻿@model IEnumerable<db8abase.Models.Tournament>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>TournamentManagement</title>
+</head>
+<body>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TournamentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfRounds)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EntryFee)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TournamentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfRounds)
+            </td>
+            <td>
+                $@Html.DisplayFor(modelItem => item.EntryFee)/team
+            </td>
+            <td>
+                <a asp-action="Details" asp-route-id="@item.TournamentId">Details</a> |
+                <a asp-action="EnterTeams" asp-route-id="@item.TournamentId">Enter Teams</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</body>
+</html>
