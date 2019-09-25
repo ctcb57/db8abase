@@ -10,7 +10,7 @@ using db8abase.Data;
 namespace db8abase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190924185722_TestMigration")]
+    [Migration("20190924212250_TestMigration")]
     partial class TestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -334,6 +334,21 @@ namespace db8abase.Migrations
                     b.HasKey("JudgeId");
 
                     b.ToTable("Judge");
+                });
+
+            modelBuilder.Entity("db8abase.Models.Room", b =>
+                {
+                    b.Property<int>("RoomId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("RoomNumber");
+
+                    b.Property<int>("SchoolId");
+
+                    b.HasKey("RoomId");
+
+                    b.ToTable("Room");
                 });
 
             modelBuilder.Entity("db8abase.Models.School", b =>

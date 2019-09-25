@@ -83,7 +83,7 @@ namespace db8abase.Controllers
                     currentDirector.SchoolId = school.SchoolId;
                     _context.Attach(currentDirector);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction("GetTournamentListing", "Home");
+                    return RedirectToAction("GetRoomsList", "TournamentDirectors");
                 }
                 else if(currentUserRole.RoleId == coachRoleId.Id)
                 {

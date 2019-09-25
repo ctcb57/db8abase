@@ -334,6 +334,21 @@ namespace db8abase.Migrations
                     b.ToTable("Judge");
                 });
 
+            modelBuilder.Entity("db8abase.Models.Room", b =>
+                {
+                    b.Property<int>("RoomId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("RoomNumber");
+
+                    b.Property<int>("SchoolId");
+
+                    b.HasKey("RoomId");
+
+                    b.ToTable("Room");
+                });
+
             modelBuilder.Entity("db8abase.Models.School", b =>
                 {
                     b.Property<int>("SchoolId")

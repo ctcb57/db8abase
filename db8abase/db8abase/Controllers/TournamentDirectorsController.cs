@@ -73,7 +73,15 @@ namespace db8abase.Controllers
             _context.Attach(tournamentDirector);
             _context.Attach(tournamentToAdd);
             _context.SaveChanges();
-            return RedirectToAction("GetTournamentListing", "Home");
+            return RedirectToAction("GetRoomsList", "TournamentDirectors");
+        }
+
+        public IActionResult GetRoomsList()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var roomList = _context.Room.Where(r => r.SchoolId == currentDirector.SchoolId).ToList();
+            return View(roomList);
         }
 
         // POST: TournamentDirectors/Create

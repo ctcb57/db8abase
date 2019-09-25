@@ -1,0 +1,52 @@
+﻿@model IEnumerable<db8abase.Models.Room>
+
+@{
+    ViewData["Title"] = "GetRoomsList";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>GetRoomsList</title>
+</head>
+<body>
+    <br />
+    <br />
+    <h1 style="text-decoration:underline">Rooms List</h1>
+    <br />
+    <p>
+        <a asp-controller="Rooms" asp-action="Create">Add Room</a>
+    </p>
+    <br />
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th style="text-decoration:underline">
+                    @Html.DisplayNameFor(model => model.RoomNumber)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="table-secondary">
+                    <th scope="row">
+                        @Html.DisplayFor(modelItem => item.RoomNumber)
+                    </th>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.RoomId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <p>
+        <a asp-controller="Home" asp-action="GetTournamentListing">Done Adding Rooms</a>
+    </p>
+</body>
+</html>
