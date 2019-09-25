@@ -96,7 +96,7 @@ namespace db8abase.Controllers
                 tournamentDirector.ApplicationUserId = Id;
                 _context.Add(tournamentDirector);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("GetListOfSchools", "Schools");
             }
             return View(tournamentDirector);
         }

@@ -1,0 +1,62 @@
+﻿@model IEnumerable<db8abase.Models.Debater>
+
+@{
+    ViewData["Title"] = "ManageTeam";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ManageTeam</title>
+</head>
+<body>
+    <br />
+    <br />
+    <h1 style="text-align:center; text-decoration:underline">Team Roster</h1>
+    <br />
+    <br />
+    <p>
+        <a asp-controller="Debaters" asp-action="Create">Add Debater</a>
+    </p>
+    <br />
+    <table class="table table-hover">
+        <thead>
+            <tr class="table-primary">
+                <th>
+                    Name
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="table-secondary">
+                    <th scope="row">
+                        @Html.DisplayFor(modelItem => item.FirstName) @Html.DisplayFor(modelItem => item.LastName)
+                    </th>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PhoneNumber)
+                    </td>
+                    <td>
+                        <a asp-controller="Debaters" asp-action="Edit" asp-route-id="@item.DebaterId">Edit</a> |
+                        <a asp-controller="Debaters" asp-action="Details" asp-route-id="@item.DebaterId">Details</a> |
+                        <a asp-controller="Debaters" asp-action="Delete" asp-route-id="@item.DebaterId">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

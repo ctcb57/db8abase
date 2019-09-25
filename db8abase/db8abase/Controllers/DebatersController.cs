@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
+using System.Security.Claims;
 
 namespace db8abase.Controllers
 {
@@ -55,14 +56,18 @@ namespace db8abase.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DebaterId,FirstName,LastName,Email,PhoneNumber,CoachId,PartnerId,SchoolId,IndividualRoundSpeakerPoints,IndividualTournamentSpeakerPoints,AnnualAverageSpeakerPoints,ApplicationUserId")] Debater debater, string Id)
+        public async Task<IActionResult> Create([Bind("DebaterId,FirstName,LastName,Email,PhoneNumber,CoachId,PartnerId,SchoolId,IndividualRoundSpeakerPoints,IndividualTournamentSpeakerPoints,AnnualAverageSpeakerPoints,ApplicationUserId")] Debater debater/*, string Id*/)
         {
             if (ModelState.IsValid)
             {
-                debater.ApplicationUserId = Id;
+                //debater.ApplicationUserId = Id;
+                var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+                var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+                debater.CoachId = currentCoach.CoachId;
+                debater.SchoolId = currentCoach.SchoolId;
                 _context.Add(debater);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Coaches", "ManageTeam");
             }
             return View(debater);
         }

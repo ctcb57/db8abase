@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
+using System.Security.Claims;
 
 namespace db8abase.Controllers
 {
@@ -22,7 +23,18 @@ namespace db8abase.Controllers
         // GET: Coaches
         public async Task<IActionResult> Index()
         {
-            return View();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            return View(currentCoach);
+        }
+
+        // GET: Coaches/ManageTeam
+        public IActionResult ManageTeam()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var currentTeam = _context.Debater.Where(d => d.SchoolId == currentCoach.SchoolId).ToList();
+            return View(currentTeam);
         }
 
         // GET: Coaches/Details/5
