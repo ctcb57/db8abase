@@ -2,18 +2,24 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_LayoutDebater.cshtml";
 }
+<br />
+<h1>Edit Debater Information</h1>
 
-<h1>Edit</h1>
 
-<h4>Debater</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="DebaterId" />
+            <input type="hidden" asp-for="CoachId" />
+            <input type="hidden" asp-for="PartnerId" />
+            <input type="hidden" asp-for="SchoolId" />
+            <input type="hidden" asp-for="IndividualRoundSpeakerPoints" />
+            <input type="hidden" asp-for="IndividualTournamentSpeakerPoints" />
+            <input type="hidden" asp-for="AnnualAverageSpeakerPoints" />
+            <input type="hidden" asp-for="ApplicationUserId" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -35,41 +41,6 @@
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="CoachId" class="control-label"></label>
-                <input asp-for="CoachId" class="form-control" />
-                <span asp-validation-for="CoachId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PartnerId" class="control-label"></label>
-                <input asp-for="PartnerId" class="form-control" />
-                <span asp-validation-for="PartnerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SchoolId" class="control-label"></label>
-                <input asp-for="SchoolId" class="form-control" />
-                <span asp-validation-for="SchoolId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IndividualRoundSpeakerPoints" class="control-label"></label>
-                <input asp-for="IndividualRoundSpeakerPoints" class="form-control" />
-                <span asp-validation-for="IndividualRoundSpeakerPoints" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IndividualTournamentSpeakerPoints" class="control-label"></label>
-                <input asp-for="IndividualTournamentSpeakerPoints" class="form-control" />
-                <span asp-validation-for="IndividualTournamentSpeakerPoints" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AnnualAverageSpeakerPoints" class="control-label"></label>
-                <input asp-for="AnnualAverageSpeakerPoints" class="form-control" />
-                <span asp-validation-for="AnnualAverageSpeakerPoints" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ApplicationUserId" class="control-label"></label>
-                <input asp-for="ApplicationUserId" class="form-control" />
-                <span asp-validation-for="ApplicationUserId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -77,6 +48,6 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="Coaches" asp-action="ManageTeam">Back to List</a>
 </div>
 

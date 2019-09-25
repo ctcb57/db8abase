@@ -67,7 +67,7 @@ namespace db8abase.Controllers
                 debater.SchoolId = currentCoach.SchoolId;
                 _context.Add(debater);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Coaches", "ManageTeam");
+                return RedirectToAction("ManageTeam", "Coaches");
             }
             return View(debater);
         }
@@ -118,7 +118,7 @@ namespace db8abase.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("ManageTeam", "Coaches");
             }
             return View(debater);
         }

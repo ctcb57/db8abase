@@ -2,14 +2,13 @@
 
 @{
     ViewData["Title"] = "Delete";
-    Layout = "~/Views/Shared/_LayoutDebater.cshtml";
 }
 
-<h1>Delete</h1>
+<br />
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to remove this debater from your roster?</h3>
 <div>
-    <h4>Debater</h4>
+
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -36,53 +35,11 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.PhoneNumber)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CoachId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CoachId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PartnerId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PartnerId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SchoolId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SchoolId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IndividualRoundSpeakerPoints)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IndividualRoundSpeakerPoints)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IndividualTournamentSpeakerPoints)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IndividualTournamentSpeakerPoints)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AnnualAverageSpeakerPoints)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AnnualAverageSpeakerPoints)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ApplicationUserId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApplicationUserId)
-        </dd>
     </dl>
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="DebaterId" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a asp-controller="Coaches" asp-action="ManageTeam">Back to List</a>
     </form>
 </div>
