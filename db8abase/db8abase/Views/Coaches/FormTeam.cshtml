@@ -1,0 +1,94 @@
+﻿@model db8abase.Models.IndividualTeam
+
+@{
+    ViewData["Title"] = "FormTeam";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>FormTeam</title>
+</head>
+<body>
+
+    <h4>IndividualTeam</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-10">
+            <form asp-action="FormTeam">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="IndividualTeamId" />
+                <input type="hidden" asp-for="SingleTournamentWins" />
+                <input type="hidden" asp-for="SingleTournamentLosses" />
+                <input type="hidden" asp-for="CumulativeAnnualWins" />
+                <input type="hidden" asp-for="CumulativeAnnualLosses" />
+                <input type="hidden" asp-for="CumulativeAnnualElminationRoundWins" />
+                <input type="hidden" asp-for="AnnualEliminationRoundAppearances" />
+                <input type="hidden" asp-for="TournamentAffirmativeRounds" />
+                <input type="hidden" asp-for="TournamentNegativeRounds" />
+                <input type="hidden" asp-for="TocBids" />
+                <input type="hidden" asp-for="CoachId" />
+                <input type="hidden" asp-for="SchoolId" />
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h5 style="text-decoration:underline">First Speaker</h5>
+                        <div class="form-group">
+                            <label asp-for="FirstSpeaker.FirstName" class="control-label"></label>
+                            <input asp-for="FirstSpeaker.FirstName" class="form-control" />
+                            <span asp-validation-for="FirstSpeaker.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FirstSpeaker.LastName" class="control-label"></label>
+                            <input asp-for="FirstSpeaker.LastName" class="form-control" />
+                            <span asp-validation-for="FirstSpeaker.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FirstSpeaker.Email" class="control-label"></label>
+                            <input asp-for="FirstSpeaker.Email" class="form-control" />
+                            <span asp-validation-for="FirstSpeaker.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="FirstSpeaker.PhoneNumber" class="control-label"></label>
+                            <input asp-for="FirstSpeaker.PhoneNumber" class="form-control" />
+                            <span asp-validation-for="FirstSpeaker.PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <h5 style="text-decoration:underline">First Speaker</h5>
+                        <div class="form-group">
+                            <label asp-for="SecondSpeaker.FirstName" class="control-label"></label>
+                            <input asp-for="SecondSpeaker.FirstName" class="form-control" />
+                            <span asp-validation-for="SecondSpeaker.FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SecondSpeaker.LastName" class="control-label"></label>
+                            <input asp-for="SecondSpeaker.LastName" class="form-control" />
+                            <span asp-validation-for="SecondSpeaker.LastName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SecondSpeaker.Email" class="control-label"></label>
+                            <input asp-for="SecondSpeaker.Email" class="form-control" />
+                            <span asp-validation-for="SecondSpeaker.Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SecondSpeaker.PhoneNumber" class="control-label"></label>
+                            <input asp-for="SecondSpeaker.PhoneNumber" class="form-control" />
+                            <span asp-validation-for="SecondSpeaker.PhoneNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</body>
+</html>

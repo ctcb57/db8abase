@@ -1,7 +1,7 @@
 ﻿@model db8abase.Models.ViewModels.CoachesEnterTeamsViewModel
 
 @{
-    Layout = null;
+    ViewData["Title"] = "EnterTeams";
 }
 
 <!DOCTYPE html>
@@ -12,33 +12,28 @@
     <title>EnterTeams</title>
 </head>
 <body>
-
-    <h1 style="text-align:center; text-decoration:underline">@Model.Tournament.Name</h1>
-    <div class="container">
-        <div class="col-sm-1"></div>
-        <div class="col-sm-10">
-
+    <br />
+    <h1 style="text-align:center; text-decoration:underline">Enter Team For @Model.Tournament.Name</h1>
+    <br />
+    <form asp-controller="Coaches" asp-action="EnterTeams">
+        <div class="row">
+            <div class="col-sm-2"></div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <select asp-for="Debaters" asp-items="@Model.Debaters"></select>
+                </div>
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <select asp-for="Debaters" asp-items="@Model.Debaters"></select>
+                </div>
+            </div>
+            <div class="col-sm-2"></div>
         </div>
-        <div class="col-sm-1"></div>
-    </div>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        <br />
+        <div class="form-group">
+            <input type="submit" value="Enter" class="btn btn-primary" />
+        </div>
+    </form>
 </body>
 </html>
