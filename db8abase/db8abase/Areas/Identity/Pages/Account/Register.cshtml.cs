@@ -126,24 +126,28 @@ namespace db8abase.Areas.Identity.Pages.Account
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.TournamentDirector);
                         var role = await _userManager.GetRolesAsync(user);
+                        _logger.LogInformation("User logged in.");
                         return RedirectToAction("Create", "TournamentDirectors", new { id = user.Id });
                     }
                     if (user.Role == "Coach")
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.Coach);
                         var role = await _userManager.GetRolesAsync(user);
+                        _logger.LogInformation("User logged in.");
                         return RedirectToAction("Create", "Coaches", new { id = user.Id });
                     }
                     if (user.Role == "Debater")
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.Debater);
                         var role = await _userManager.GetRolesAsync(user);
+                        _logger.LogInformation("User logged in.");
                         return RedirectToAction("Create", "Debaters", new { id = user.Id });
                     }
                     if (user.Role == "Judge")
                     {
                         await _userManager.AddToRoleAsync(user, StaticDetails.Judge);
                         var role = await _userManager.GetRolesAsync(user);
+                        _logger.LogInformation("User logged in.");
                         return RedirectToAction("Create", "Judges", new { id = user.Id });
                     }
                     foreach (var error in result.Errors)

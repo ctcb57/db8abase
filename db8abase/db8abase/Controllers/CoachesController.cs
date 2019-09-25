@@ -87,25 +87,17 @@ namespace db8abase.Controllers
                 coach.ApplicationUserId = Id;
                 _context.Add(coach);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("GetListOfSchools", "Schools");
+                return RedirectToAction("RegistrationConfirmation", "Home");
             }
             return View(coach);
         }
 
         // GET: Coaches/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var coach = await _context.Coach.FindAsync(id);
-            if (coach == null)
-            {
-                return NotFound();
-            }
-            return View(coach);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            return View(currentCoach);
         }
 
         // POST: Coaches/Edit/5
@@ -113,34 +105,11 @@ namespace db8abase.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId")] Coach coach)
+        public async Task<IActionResult> Edit([Bind("CoachId,FirstName,LastName,Email,PhoneNumber,Balance,ApplicationUserId,SchoolId")] Coach coach)
         {
-            if (id != coach.CoachId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(coach);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CoachExists(coach.CoachId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(coach);
+            _context.Update(coach);
+            _context.SaveChanges();
+            return RedirectToAction("GetListOfSchools", "Schools");
         }
 
         // GET: Coaches/Delete/5

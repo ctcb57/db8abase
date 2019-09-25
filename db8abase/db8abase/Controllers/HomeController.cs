@@ -39,5 +39,10 @@ namespace db8abase.Controllers
             var tournamentList = _context.Tournament.ToList();
             return View(tournamentList);
         }
+
+        public IActionResult RegistrationConfirmation()
+        {
+            return View();
+        }
     }
 }

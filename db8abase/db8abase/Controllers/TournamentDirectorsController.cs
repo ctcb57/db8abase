@@ -61,23 +61,23 @@ namespace db8abase.Controllers
         }
         // POST: TournamentDirectors/SelectSchool
         [HttpPost]
-        public IActionResult SelectSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
-        {
-            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
-            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
-            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            var tournamentToAdd = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
-            tournamentDirector = currentDirector;
-            tournamentDirector.SchoolId = selectedSchool.SchoolId;
-            tournamentToAdd.School = selectedSchool;
-            _context.Attach(tournamentDirector);
-            _context.Attach(tournamentToAdd);
-            _context.SaveChanges();
-            return RedirectToAction("GetRoomsList", "TournamentDirectors");
-        }
+        //public IActionResult SelectSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
+        //{
+        //    var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
+        //    var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+        //    var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+        //    var tournamentToAdd = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+        //    tournamentDirector = currentDirector;
+        //    tournamentDirector.SchoolId = selectedSchool.SchoolId;
+        //    tournamentToAdd.School = selectedSchool;
+        //    _context.Attach(tournamentDirector);
+        //    _context.Attach(tournamentToAdd);
+        //    _context.SaveChanges();
+        //    return RedirectToAction("GetRoomsList", "TournamentDirectors");
+        //}
 
         // GET: TournamentDirectors/SelectRegistrationSchool
-        public IActionResult SelectRegistrationSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
+        public IActionResult SelectSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
         {
             var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
@@ -109,7 +109,7 @@ namespace db8abase.Controllers
                 tournamentDirector.ApplicationUserId = Id;
                 _context.Add(tournamentDirector);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("GetListOfSchools", "Schools");
+                return RedirectToAction("RegistrationConfirmation", "Home");
             }
             return View(tournamentDirector);
         }
@@ -137,54 +137,22 @@ namespace db8abase.Controllers
         }
 
         // GET: TournamentDirectors/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tournamentDirector = await _context.TournamentDirector.FindAsync(id);
-            if (tournamentDirector == null)
-            {
-                return NotFound();
-            }
-            return View(tournamentDirector);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            return View(currentDirector);
         }
 
         // POST: TournamentDirectors/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TournamentDirectorId,FirstName,LastName,Email,Message")] TournamentDirector tournamentDirector)
+        public async Task<IActionResult> Edit([Bind("TournamentDirectorId,FirstName,LastName,Email,Message,TournamentId,ApplicationUserId,SchoolId")] TournamentDirector tournamentDirector)
         {
-            if (id != tournamentDirector.TournamentDirectorId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(tournamentDirector);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TournamentDirectorExists(tournamentDirector.TournamentDirectorId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(tournamentDirector);
+            _context.Update(tournamentDirector);
+            _context.SaveChanges();
+            return RedirectToAction("GetListOfSchools", "Schools");
         }
 
         // GET: TournamentDirectors/Delete/5
