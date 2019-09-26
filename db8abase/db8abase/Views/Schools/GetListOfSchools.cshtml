@@ -33,6 +33,14 @@
                 {
                     <a asp-controller="Coaches" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
                 }
+                else if (this.User.IsInRole("Judge"))
+                {
+                    <a asp-controller="Judges" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
+                }
+                else if (this.User.IsInRole("Debater"))
+                {
+                    <a asp-controller="Debaters" asp-action="SelectSchool" asp-route-id="@item.SchoolId" style="color:#087485">Select</a>
+                }
             </td>
         </tr>
 }

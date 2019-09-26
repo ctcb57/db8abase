@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
+using System.Security.Claims;
 
 namespace db8abase.Controllers
 {
@@ -62,25 +63,17 @@ namespace db8abase.Controllers
                 judge.ApplicationUserId = Id;
                 _context.Add(judge);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("RegistrationConfirmation", "Home");
             }
             return View(judge);
         }
 
         // GET: Judges/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var judge = await _context.Judge.FindAsync(id);
-            if (judge == null)
-            {
-                return NotFound();
-            }
-            return View(judge);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            return View(currentJudge);
         }
 
         // POST: Judges/Edit/5
@@ -90,32 +83,9 @@ namespace db8abase.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge)
         {
-            if (id != judge.JudgeId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(judge);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!JudgeExists(judge.JudgeId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(judge);
+            _context.Update(judge);
+            _context.SaveChanges();
+            return RedirectToAction("GetListOfSchools", "Schools");
         }
 
         // GET: Judges/Delete/5

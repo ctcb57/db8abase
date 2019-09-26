@@ -89,6 +89,12 @@ namespace db8abase.Controllers
             teamEntry.IndividualTeamId = teamId;
             _context.Attach(teamEntry);
             _context.SaveChanges();
+            var tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == teamEntry.TournamentId);
+            var enteredTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == teamId);
+            var teamCoach = _context.Coach.FirstOrDefault(c => c.CoachId == enteredTeam.CoachId);
+            teamCoach.Balance = tournament.EntryFee;
+            _context.Attach(teamCoach);
+            _context.SaveChanges();
             return RedirectToAction("TournamentManagement", "Coaches");
         }
 

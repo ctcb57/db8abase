@@ -1,0 +1,40 @@
+﻿@model db8abase.Models.ViewModels.HomeDetailsViewModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+</head>
+<body>
+    <br />
+    <br />
+    <h1 style="text-align:center;text-decoration:underline">Team List for @Html.DisplayFor(Model => Model.Tournament.Name)</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Team Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Teams) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IndividualTeamName)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) 
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</body>
+</html>
