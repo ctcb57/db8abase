@@ -65,11 +65,13 @@ namespace db8abase.Controllers
         {
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<IndividualTeam> teams = GetTeamEntries(id);
+            List<Judge> judges = GetJudgeEntries(id);
 
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
                 Tournament = tournament,
                 Teams = teams,
+                Judges = judges,
             };
             return View(homeDetailsViewModel);
         }
@@ -91,6 +93,25 @@ namespace db8abase.Controllers
                 }
             }
             return teams;
+        }
+
+        public List<Judge> GetJudgeEntries(int id)
+        {
+            List<Judge> judges = new List<Judge>();
+            var entries = _context.JudgeEntry.Where(t => t.TournamentId == id).ToList();
+            var individualJudges = _context.Judge.ToList();
+            foreach (var entry in entries)
+            {
+                for (int i = 0; i < individualJudges.Count; i++)
+                {
+                    if (entry.JudgeEntryId == individualJudges[i].JudgeId)
+                    {
+                        var locatedJudge = _context.Judge.FirstOrDefault(t => t.JudgeId == individualJudges[i].JudgeId);
+                        judges.Add(locatedJudge);
+                    }
+                }
+            }
+            return judges;
         }
     }
 }

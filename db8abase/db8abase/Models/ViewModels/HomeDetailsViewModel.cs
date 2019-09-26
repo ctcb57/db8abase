@@ -11,5 +11,6 @@ namespace db8abase.Models.ViewModels
 
         public List<IndividualTeam> Teams { get; set; }
 
+        public List<Judge> Judges { get; set; }
     }
 }
