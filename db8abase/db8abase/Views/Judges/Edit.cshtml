@@ -2,18 +2,20 @@
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_LayoutJudge.cshtml";
 }
+<br />
+<h1 style="text-decoration:underline">Update Account</h1>
 
-<h1>Edit</h1>
 
-<h4>Judge</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="JudgeId" />
+            <input type="hidden" asp-for="JudgingPhilosophy" />
+            <input type="hidden" asp-for="SchoolId" />
+            <input type="hidden" asp-for="ApplicationUserId" />
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
                 <input asp-for="FirstName" class="form-control" />
@@ -33,21 +35,6 @@
                 <label asp-for="PhoneNumber" class="control-label"></label>
                 <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="JudgingPhilosophy" class="control-label"></label>
-                <input asp-for="JudgingPhilosophy" class="form-control" />
-                <span asp-validation-for="JudgingPhilosophy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SchoolId" class="control-label"></label>
-                <input asp-for="SchoolId" class="form-control" />
-                <span asp-validation-for="SchoolId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ApplicationUserId" class="control-label"></label>
-                <input asp-for="ApplicationUserId" class="form-control" />
-                <span asp-validation-for="ApplicationUserId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

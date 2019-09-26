@@ -23,7 +23,9 @@ namespace db8abase.Controllers
         // GET: Judges
         public async Task<IActionResult> Index()
         {
-            return View();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            return View(currentJudge);
         }
 
         // GET: Judges/Details/5
@@ -44,8 +46,35 @@ namespace db8abase.Controllers
             return View(judge);
         }
 
-        // GET: Judges/Create
-        public IActionResult Create()
+        public IActionResult SelectSchool([Bind("SchoolId")] Judge judge, int id)
+        {
+            var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            judge = currentJudge;
+            judge.SchoolId = selectedSchool.SchoolId;
+            _context.Attach(judge);
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Judges");
+        }
+
+        // GET: EditPhilosophy
+        public IActionResult EditPhilosophy()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            return View(currentJudge);
+        }
+        // POST: EditPhilosophy
+        [HttpPost]
+        public IActionResult EditPhilosophy([Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge)
+        {
+            _context.Attach(judge);
+            _context.SaveChanges();
+            return RedirectToAction("Index", "Judges");
+        }
+            // GET: Judges/Create
+            public IActionResult Create()
         {
             Judge judge = new Judge();
             return View(judge);
@@ -69,7 +98,7 @@ namespace db8abase.Controllers
         }
 
         // GET: Judges/Edit/5
-        public async Task<IActionResult> Edit()
+        public IActionResult Edit()
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
@@ -81,7 +110,7 @@ namespace db8abase.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge)
+        public IActionResult Edit(int id, [Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge)
         {
             _context.Update(judge);
             _context.SaveChanges();

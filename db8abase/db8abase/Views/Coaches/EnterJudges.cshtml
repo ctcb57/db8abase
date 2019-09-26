@@ -1,0 +1,41 @@
+﻿@model db8abase.Models.ViewModels.CoachesEnterJudgesViewModel
+
+@{
+    ViewData["Title"] = "EnterJudges";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>EnterJudges</title>
+</head>
+<body>
+    <br />
+    <h1 style="text-align:center; text-decoration:underline">Enter Judge For Tournament</h1>
+    <br />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-controller="Coaches" asp-action="EnterJudges">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="@Model.JudgeEntry.JudgeId" />
+                <input type="hidden" asp-for="@Model.JudgeEntry.TournamentId" />
+                <input type="hidden" asp-for="@Model.JudgeEntry.JudgeEntryId" />
+                <div class="form-group">
+                    <select asp-for="Judge" asp-items="Model.Judges"></select>
+                </div>
+                <br />
+                <div class="form-group">
+                    <input type="submit" value="Enter" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+</body>
+</html>

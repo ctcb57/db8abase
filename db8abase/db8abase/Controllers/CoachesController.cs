@@ -62,6 +62,54 @@ namespace db8abase.Controllers
             return teamList;
         }
 
+        public IEnumerable<SelectListItem> BuildJudgesList()
+        {
+            List<SelectListItem> judgeList = new List<SelectListItem>();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var judges = _context.Judge.Where(j => j.SchoolId == currentCoach.SchoolId).ToList();
+            foreach (var judge in judges)
+            {
+                judgeList.Add(
+                                new SelectListItem
+                                {
+                                    Value = judge.JudgeId.ToString(),
+                                    Text = $"{judge.FirstName} {judge.LastName}",
+                                }); ;
+            }
+            return judgeList;
+        }
+
+        // GET: EnterJudges
+        public ViewResult EnterJudges(int id)
+        {
+            JudgeEntry judgeEntry = new JudgeEntry();
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            var judges = BuildJudgesList();
+            judgeEntry.TournamentId = tournament.TournamentId;
+            _context.Add(judgeEntry);
+            _context.SaveChanges();
+
+            CoachesEnterJudgesViewModel coachesEnterJudgesViewModel = new CoachesEnterJudgesViewModel()
+            {
+                JudgeEntry = judgeEntry,
+                Judges = judges,
+                Judge = "judge",
+            };
+            return View(coachesEnterJudgesViewModel);
+        }
+        // POST: EnterJudges
+        [HttpPost]
+        public IActionResult EnterJudges(CoachesEnterJudgesViewModel data)
+        {
+            var judgeId = int.Parse(data.Judge);
+            JudgeEntry judgeEntry = _context.JudgeEntry.Where(t => t.JudgeEntryId == data.JudgeEntry.JudgeEntryId).Single();
+            judgeEntry.JudgeId = judgeId;
+            _context.Attach(judgeEntry);
+            _context.SaveChanges();
+            return RedirectToAction("TournamentManagement", "Coaches");
+        }
+
         // GET: Coaches/EnterTeam
         public ViewResult EnterTeams(int id)
         {
@@ -97,6 +145,7 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             return RedirectToAction("TournamentManagement", "Coaches");
         }
+
 
         // GET: Form Individual Team
         public IActionResult FormTeam()
