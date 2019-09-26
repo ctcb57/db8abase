@@ -1,0 +1,27 @@
+﻿@model db8abase.Models.Judge
+
+@{
+    ViewData["Title"] = "ViewPhilosophy";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewPhilosophy</title>
+</head>
+<body>
+    <br />
+    <br />
+    <h1 style="text-align:center;text-decoration:underline">@Html.DisplayFor(model => model.FirstName)  @Html.DisplayFor(model => model.LastName)'s Philosophy</h1>
+    <div>
+        <hr />
+        <br />
+        <p>@Html.DisplayFor(model => model.JudgingPhilosophy)</p>
+    </div>
+    <div>
+        <a asp-action="GetJudgesList">Back to List</a>
+    </div>
+</body>
+</html>

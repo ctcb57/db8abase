@@ -69,7 +69,7 @@ namespace db8abase.Controllers
         [HttpPost]
         public IActionResult EditPhilosophy([Bind("JudgeId,FirstName,LastName,Email,PhoneNumber,JudgingPhilosophy,SchoolId,ApplicationUserId")] Judge judge)
         {
-            _context.Attach(judge);
+            _context.Update(judge);
             _context.SaveChanges();
             return RedirectToAction("Index", "Judges");
         }

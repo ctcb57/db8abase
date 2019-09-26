@@ -46,6 +46,20 @@ namespace db8abase.Controllers
             return View();
         }
 
+        // GET: JudgesList 
+        public IActionResult GetJudgesList()
+        {
+            var judgesList = _context.Judge.ToList();
+            return View(judgesList);
+        }
+
+        // GET: ViewPhilosophy
+        public IActionResult ViewPhilosophy(int id)
+        {
+            var judge = _context.Judge.FirstOrDefault(j => j.JudgeId == id);
+            return View(judge);
+        }
+
         // GET: Details
         public IActionResult Details(int id)
         {
