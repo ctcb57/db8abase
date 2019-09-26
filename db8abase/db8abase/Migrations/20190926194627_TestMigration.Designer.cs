@@ -10,7 +10,7 @@ using db8abase.Data;
 namespace db8abase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190926120620_TestMigration")]
+    [Migration("20190926194627_TestMigration")]
     partial class TestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -427,6 +427,8 @@ namespace db8abase.Migrations
 
                     b.Property<double>("EntryFee");
 
+                    b.Property<string>("FilePath");
+
                     b.Property<string>("Name");
 
                     b.Property<int>("NumberOfEliminationRounds");
@@ -455,6 +457,8 @@ namespace db8abase.Migrations
                     b.Property<string>("ApplicationUserId");
 
                     b.Property<string>("Email");
+
+                    b.Property<string>("FilePath");
 
                     b.Property<string>("FirstName");
 

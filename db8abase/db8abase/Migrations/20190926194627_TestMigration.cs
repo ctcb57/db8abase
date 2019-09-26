@@ -198,7 +198,8 @@ namespace db8abase.Migrations
                     Message = table.Column<string>(nullable: true),
                     TournamentId = table.Column<int>(nullable: false),
                     ApplicationUserId = table.Column<string>(nullable: true),
-                    SchoolId = table.Column<int>(nullable: false)
+                    SchoolId = table.Column<int>(nullable: false),
+                    FilePath = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -383,7 +384,8 @@ namespace db8abase.Migrations
                     NumberOfEliminationRounds = table.Column<int>(nullable: false),
                     EntryFee = table.Column<double>(nullable: false),
                     TournamentDate = table.Column<DateTime>(nullable: false),
-                    TeamLimit = table.Column<int>(nullable: false)
+                    TeamLimit = table.Column<int>(nullable: false),
+                    FilePath = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

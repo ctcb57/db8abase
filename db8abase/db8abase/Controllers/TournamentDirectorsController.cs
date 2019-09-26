@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace db8abase.Controllers
 {
@@ -122,12 +124,13 @@ namespace db8abase.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTournament([Bind("TournamentId,Name,School,NumberOfRounds,NumberOfEliminationRounds,EntryFee,TournamentDate,TeamLimit")] Tournament tournament)
+        public IActionResult CreateTournament([Bind("TournamentId,Name,School,NumberOfRounds,NumberOfEliminationRounds,EntryFee,TournamentDate,TeamLimit,FilePath")] Tournament tournament)
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
             var directorSchool = _context.School.FirstOrDefault(s => s.SchoolId == currentDirector.SchoolId);
             tournament.School = directorSchool;
+            tournament.FilePath = currentDirector.FilePath;
             _context.Add(tournament);
             _context.SaveChanges();
             currentDirector.TournamentId = tournament.TournamentId;
@@ -135,6 +138,7 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             return RedirectToAction("GetRoomsList", "TournamentDirectors");
         }
+        
 
         // GET: TournamentDirectors/Edit/5
         public async Task<IActionResult> Edit()

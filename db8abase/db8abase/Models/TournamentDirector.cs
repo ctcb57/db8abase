@@ -23,5 +23,6 @@ namespace db8abase.Models
         public string ApplicationUserId { get; set; }
         [ForeignKey("School Id")]
         public int SchoolId { get; set; }
+        public string FilePath { get; set; }
     }
 }

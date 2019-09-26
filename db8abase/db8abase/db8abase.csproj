@@ -15,4 +15,9 @@
     <PackageReference Include="popper.js" Version="1.14.3" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Docs\" />
+  </ItemGroup>
+
 </Project>
