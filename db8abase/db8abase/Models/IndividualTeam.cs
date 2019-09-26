@@ -11,8 +11,11 @@ namespace db8abase.Models
     {
         [Key]
         public int IndividualTeamId { get; set; }
+        public string IndividualTeamName { get; set; }
         public Debater FirstSpeaker { get; set; }
+
         public Debater SecondSpeaker { get; set; }
+
         public int SingleTournamentWins { get; set; }
         public int SingleTournamentLosses { get; set; }
         public int CumulativeAnnualWins { get; set; }

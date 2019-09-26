@@ -286,6 +286,8 @@ namespace db8abase.Migrations
 
                     b.Property<int?>("FirstSpeakerDebaterId");
 
+                    b.Property<string>("IndividualTeamName");
+
                     b.Property<int>("SchoolId");
 
                     b.Property<int?>("SecondSpeakerDebaterId");
@@ -332,6 +334,21 @@ namespace db8abase.Migrations
                     b.HasKey("JudgeId");
 
                     b.ToTable("Judge");
+                });
+
+            modelBuilder.Entity("db8abase.Models.JudgeEntry", b =>
+                {
+                    b.Property<int>("JudgeEntryId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("JudgeId");
+
+                    b.Property<int>("TournamentId");
+
+                    b.HasKey("JudgeEntryId");
+
+                    b.ToTable("JudgeEntry");
                 });
 
             modelBuilder.Entity("db8abase.Models.Room", b =>
@@ -383,6 +400,21 @@ namespace db8abase.Migrations
                     b.HasKey("TeamId");
 
                     b.ToTable("Team");
+                });
+
+            modelBuilder.Entity("db8abase.Models.TeamEntry", b =>
+                {
+                    b.Property<int>("EntryId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("IndividualTeamId");
+
+                    b.Property<int>("TournamentId");
+
+                    b.HasKey("EntryId");
+
+                    b.ToTable("TeamEntry");
                 });
 
             modelBuilder.Entity("db8abase.Models.Tournament", b =>

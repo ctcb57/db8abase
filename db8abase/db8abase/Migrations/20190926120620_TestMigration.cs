@@ -131,6 +131,20 @@ namespace db8abase.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "JudgeEntry",
+                columns: table => new
+                {
+                    JudgeEntryId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TournamentId = table.Column<int>(nullable: false),
+                    JudgeId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_JudgeEntry", x => x.JudgeEntryId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Room",
                 columns: table => new
                 {
@@ -156,6 +170,20 @@ namespace db8abase.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Team", x => x.TeamId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamEntry",
+                columns: table => new
+                {
+                    EntryId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TournamentId = table.Column<int>(nullable: false),
+                    IndividualTeamId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamEntry", x => x.EntryId);
                 });
 
             migrationBuilder.CreateTable(
@@ -311,6 +339,7 @@ namespace db8abase.Migrations
                 {
                     IndividualTeamId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    IndividualTeamName = table.Column<string>(nullable: true),
                     FirstSpeakerDebaterId = table.Column<int>(nullable: true),
                     SecondSpeakerDebaterId = table.Column<int>(nullable: true),
                     SingleTournamentWins = table.Column<int>(nullable: false),
@@ -454,10 +483,16 @@ namespace db8abase.Migrations
                 name: "Judge");
 
             migrationBuilder.DropTable(
+                name: "JudgeEntry");
+
+            migrationBuilder.DropTable(
                 name: "Room");
 
             migrationBuilder.DropTable(
                 name: "Team");
+
+            migrationBuilder.DropTable(
+                name: "TeamEntry");
 
             migrationBuilder.DropTable(
                 name: "Tournament");

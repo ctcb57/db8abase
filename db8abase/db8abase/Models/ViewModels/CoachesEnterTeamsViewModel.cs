@@ -8,7 +8,10 @@ namespace db8abase.Models.ViewModels
 {
     public class CoachesEnterTeamsViewModel
     {
-        public Tournament Tournament { get; set; }
-        public List<SelectListItem> Debaters { get; set; }
+        public IEnumerable<SelectListItem> Teams { get; set; }
+        public TeamEntry TeamEntry { get; set; }
+
+        public string Team { get; set; }
+
     }
 }

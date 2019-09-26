@@ -25,6 +25,7 @@ namespace db8abase.Data
         public DbSet<Judge> Judge { get; set; }
         public DbSet<IndividualTeam> IndividualTeam { get; set; }
         public DbSet<Room> Room { get; set; }
-
+        public DbSet<TeamEntry> TeamEntry { get; set; }
+        public DbSet<JudgeEntry> JudgeEntry { get; set; }
     }
 }

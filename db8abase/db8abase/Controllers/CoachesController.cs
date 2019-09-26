@@ -44,20 +44,52 @@ namespace db8abase.Controllers
             return View(tournamentListing);
         }
 
+        public IEnumerable<SelectListItem> BuildTeamList()
+        {
+            List<SelectListItem> teamList = new List<SelectListItem>();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var teams = _context.IndividualTeam.Where(t => t.SchoolId == currentCoach.SchoolId).ToList();
+            foreach(var team in teams)
+            {
+                teamList.Add(
+                                new SelectListItem
+                                {
+                                    Value = team.IndividualTeamId.ToString(),
+                                    Text = team.IndividualTeamName,
+                                }); ;
+            }
+            return teamList;
+        }
+
         // GET: Coaches/EnterTeam
         public ViewResult EnterTeams(int id)
         {
+            TeamEntry teamEntry = new TeamEntry();
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
-            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
-            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            var debaters = PopulateDebaters();
+            var teams = BuildTeamList();
+            teamEntry.TournamentId = tournament.TournamentId;
+            _context.Add(teamEntry);
+            _context.SaveChanges();
 
             CoachesEnterTeamsViewModel coachesEnterTeamsViewModel = new CoachesEnterTeamsViewModel()
             {
-                Tournament = tournament,
-                Debaters = debaters,
+                TeamEntry = teamEntry,
+                Teams = teams,
+                Team = "team",
             };
             return View(coachesEnterTeamsViewModel);
+        }
+
+        [HttpPost]
+        public IActionResult EnterTeams(CoachesEnterTeamsViewModel data)
+        {
+            var teamId = int.Parse(data.Team);
+            TeamEntry teamEntry = _context.TeamEntry.Where(t => t.EntryId == data.TeamEntry.EntryId).Single();
+            teamEntry.IndividualTeamId = teamId;
+            _context.Attach(teamEntry);
+            _context.SaveChanges();
+            return RedirectToAction("TournamentManagement", "Coaches");
         }
 
         // GET: Form Individual Team
@@ -71,6 +103,7 @@ namespace db8abase.Controllers
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentCoach = _context.Coach.FirstOrDefault(c => c.ApplicationUserId == currentUserId);
+            var school = _context.School.Where(s => s.SchoolId == currentCoach.SchoolId).Single();
             team.CoachId = currentCoach.CoachId;
             team.SchoolId = currentCoach.SchoolId;
             Debater debater1 = new Debater();
@@ -86,6 +119,7 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             debater1.PartnerId = debater2.DebaterId;
             debater2.PartnerId = debater1.DebaterId;
+            team.IndividualTeamName = $"{school.Name} {debater1.LastName} & {debater2.LastName}";
             _context.Attach(debater1);
             _context.Attach(debater2);
             _context.SaveChanges();
@@ -94,18 +128,18 @@ namespace db8abase.Controllers
             return RedirectToAction("ManageTeam", "Coaches");
         }
 
-        public List<SelectListItem> PopulateDebaters()
+        public List<SelectListItem> PopulateTeams()
         {
             List<SelectListItem> items = new List<SelectListItem>();
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            var debaters = _context.Debater.Where(d => d.SchoolId == currentCoach.SchoolId);
-            foreach(var debater in debaters)
+            var teams = _context.IndividualTeam.Where(d => d.SchoolId == currentCoach.SchoolId);
+            foreach(var team in teams)
             {
                 items.Add(new SelectListItem
                 {
-                    Text = $"{ debater.FirstName} {debater.LastName}",
-                    Value = debater.DebaterId.ToString()
+                    Text = $"{team.FirstSpeaker.LastName} & {team.SecondSpeaker.LastName}",
+                    Value = team.IndividualTeamId.ToString()
                 });
             }
             return items;

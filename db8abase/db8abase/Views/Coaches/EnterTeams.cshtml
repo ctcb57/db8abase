@@ -13,27 +13,21 @@
 </head>
 <body>
     <br />
-    <h1 style="text-align:center; text-decoration:underline">Enter Team For @Model.Tournament.Name</h1>
+    <h1 style="text-align:center; text-decoration:underline">Enter Team For Tournament</h1>
     <br />
-    <form asp-controller="Coaches" asp-action="EnterTeams">
-        <div class="row">
-            <div class="col-sm-2"></div>
-            <div class="col-sm-4">
-                <div class="form-group">
-                    <select asp-for="Debaters" asp-items="@Model.Debaters"></select>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="form-group">
-                    <select asp-for="Debaters" asp-items="@Model.Debaters"></select>
-                </div>
-            </div>
-            <div class="col-sm-2"></div>
+    <form asp-controller="Coaches" asp-action="EnterTeams" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="@Model.TeamEntry.TournamentId" />
+        <input type="hidden" asp-for="@Model.TeamEntry.IndividualTeamId" />
+        <input type="hidden" asp-for="@Model.TeamEntry.EntryId" />
+        <div class="form-group">
+            <select asp-for="Team" asp-items="Model.Teams"></select>
         </div>
         <br />
         <div class="form-group">
             <input type="submit" value="Enter" class="btn btn-primary" />
         </div>
+
     </form>
 </body>
 </html>
