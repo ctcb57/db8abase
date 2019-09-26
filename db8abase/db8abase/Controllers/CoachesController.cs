@@ -175,8 +175,8 @@ namespace db8abase.Controllers
             debater1.PartnerId = debater2.DebaterId;
             debater2.PartnerId = debater1.DebaterId;
             team.IndividualTeamName = $"{school.Name} {debater1.LastName} & {debater2.LastName}";
-            _context.Attach(debater1);
-            _context.Attach(debater2);
+            _context.Update(debater1);
+            _context.Update(debater2);
             _context.SaveChanges();
             _context.Add(team);
             _context.SaveChanges();
@@ -208,7 +208,7 @@ namespace db8abase.Controllers
             var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
             coach = currentCoach;
             coach.SchoolId = selectedSchool.SchoolId;
-            _context.Attach(coach);
+            _context.Update(coach);
             _context.SaveChanges();
             return RedirectToAction("Index", "Coaches");
         }
