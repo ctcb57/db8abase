@@ -213,7 +213,7 @@ namespace db8abase.Migrations
                     SchoolId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
-                    AddressId = table.Column<int>(nullable: true),
+                    AddressId = table.Column<int>(nullable: false),
                     TournamentDirectorId = table.Column<int>(nullable: false),
                     CoachId = table.Column<int>(nullable: false)
                 },
@@ -225,7 +225,7 @@ namespace db8abase.Migrations
                         column: x => x.AddressId,
                         principalTable: "Address",
                         principalColumn: "AddressId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -379,7 +379,7 @@ namespace db8abase.Migrations
                     TournamentId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: true),
-                    SchoolId = table.Column<int>(nullable: true),
+                    SchoolId = table.Column<int>(nullable: false),
                     NumberOfRounds = table.Column<int>(nullable: false),
                     NumberOfEliminationRounds = table.Column<int>(nullable: false),
                     EntryFee = table.Column<double>(nullable: false),
@@ -395,7 +395,7 @@ namespace db8abase.Migrations
                         column: x => x.SchoolId,
                         principalTable: "School",
                         principalColumn: "SchoolId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

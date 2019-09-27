@@ -81,8 +81,10 @@ namespace db8abase.Controllers
                     _context.Add(school);
                     _context.Add(address);
                     await _context.SaveChangesAsync();
+                    school.AddressId = address.AddressId;
+                    _context.Update(school);
                     currentDirector.SchoolId = school.SchoolId;
-                    _context.Attach(currentDirector);
+                    _context.Update(currentDirector);
                     await _context.SaveChangesAsync();
                     return RedirectToAction("Index", "TournamentDirectors");
                 }
@@ -96,8 +98,10 @@ namespace db8abase.Controllers
                     _context.Add(school);
                     _context.Add(address);
                     await _context.SaveChangesAsync();
+                    school.AddressId = address.AddressId;
+                    _context.Update(school);
                     currentCoach.SchoolId = school.SchoolId;
-                    _context.Attach(currentCoach);
+                    _context.Update(currentCoach);
                     await _context.SaveChangesAsync();
                     return RedirectToAction("Index", "Coaches");
                 }

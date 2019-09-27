@@ -30,36 +30,10 @@
     </ul>
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade active show" id="tournamentDetails">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>School</th>
-                        <th>Rounds</th>
-                        <th>Team Limt</th>
-                        <th>Entry Fee</th>
-                        <th>Invite Link</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(Model => Model.Tournament.School.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(Model => Model.Tournament.NumberOfRounds)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(Model => Model.Tournament.TeamLimit)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(Model => Model.Tournament.EntryFee)
-                        </td>
-                        <td>
-                            <a href="~/Docs/@Model.Tournament.FilePath" download>Invitation</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <p>School: @Html.DisplayFor(model => model.School.Name)</p>
+            <p>City: @Html.DisplayFor(model => model.Address.City), @Html.DisplayFor(model => model.Address.StateAbbreviation)</p>
+            <p>Rounds: @Html.DisplayFor(model => model.Tournament.NumberOfRounds)</p>
+            <p>Team Limit: @Html.DisplayFor(model => model.Tournament.TeamLimit)</p>
         </div>
         <div class="tab-pane fade" id="teamList">
             <table class="table">

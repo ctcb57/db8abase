@@ -372,7 +372,7 @@ namespace db8abase.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("AddressId");
+                    b.Property<int>("AddressId");
 
                     b.Property<int>("CoachId");
 
@@ -433,7 +433,7 @@ namespace db8abase.Migrations
 
                     b.Property<int>("NumberOfRounds");
 
-                    b.Property<int?>("SchoolId");
+                    b.Property<int>("SchoolId");
 
                     b.Property<int>("TeamLimit");
 
@@ -544,14 +544,16 @@ namespace db8abase.Migrations
                 {
                     b.HasOne("db8abase.Models.Address", "Address")
                         .WithMany()
-                        .HasForeignKey("AddressId");
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("db8abase.Models.Tournament", b =>
                 {
                     b.HasOne("db8abase.Models.School", "School")
                         .WithMany()
-                        .HasForeignKey("SchoolId");
+                        .HasForeignKey("SchoolId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

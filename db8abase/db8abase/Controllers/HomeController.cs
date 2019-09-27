@@ -66,12 +66,16 @@ namespace db8abase.Controllers
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<IndividualTeam> teams = GetTeamEntries(id);
             List<Judge> judges = GetJudgeEntries(id);
+            School school = _context.School.FirstOrDefault(s => s.SchoolId == tournament.SchoolId);
+            Address address = _context.Address.FirstOrDefault(a => a.AddressId == school.AddressId);
 
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
                 Tournament = tournament,
                 Teams = teams,
                 Judges = judges,
+                Address = address,
+                School = school,
             };
             return View(homeDetailsViewModel);
         }

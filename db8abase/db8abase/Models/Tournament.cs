@@ -12,6 +12,8 @@ namespace db8abase.Models
         [Key]
         public int TournamentId { get; set; }
         public string Name { get; set; }
+        [ForeignKey("School Id")]
+        public int SchoolId { get; set; }
         public School School { get; set; }
         [Display(Name = "Number of Rounds")]
         public int NumberOfRounds { get; set; }
