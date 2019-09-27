@@ -1,0 +1,41 @@
+﻿@model db8abase.Models.Tournament
+
+@{
+    ViewData["Title"] = "TournamentListing";
+}
+
+<h1>TournamentListing</h1>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TournamentDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+            @Html.DisplayNameFor(model => model.NumberOfRounds)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                @Html.DisplayFor(model => model.TournamentDate)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.NumberOfRounds)
+            </td>
+            <td>
+                <a asp-controller="Pairings" asp-action="Tabulate" asp-route-id="@Model.TournamentId">Tabulate</a>
+            </td>
+        </tr>
+    </tbody>
+</table>

@@ -112,7 +112,7 @@ namespace db8abase.Controllers
             {
                 for (int i = 0; i < individualJudges.Count; i++)
                 {
-                    if (entry.JudgeEntryId == individualJudges[i].JudgeId)
+                    if (entry.JudgeId == individualJudges[i].JudgeId)
                     {
                         var locatedJudge = _context.Judge.FirstOrDefault(t => t.JudgeId == individualJudges[i].JudgeId);
                         judges.Add(locatedJudge);

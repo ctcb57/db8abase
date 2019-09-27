@@ -10,7 +10,7 @@ using db8abase.Data;
 namespace db8abase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190927180224_TestMigration")]
+    [Migration("20190927193344_TestMigration")]
     partial class TestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

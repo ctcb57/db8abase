@@ -121,6 +121,15 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             return RedirectToAction("GetRoomsList", "TournamentDirectors");
         }
+
+        // GET: Tabulation
+        public IActionResult TournamentListing()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var currentTournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            return View(currentTournament);
+        }
         
 
         // GET: TournamentDirectors/Edit/5

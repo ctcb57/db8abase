@@ -19,6 +19,6 @@ namespace db8abase.Models
         public int AffirmativeTeamId { get; set; }
         [ForeignKey("Negative Team Id")]
         public int NegativeTeamId { get; set; }
-        public bool AffirmativeWinsRound { get; set; }
+        public string Winner { get; set; }
     }
 }

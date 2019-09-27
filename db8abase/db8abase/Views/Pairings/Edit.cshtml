@@ -1,0 +1,61 @@
+﻿@model db8abase.Models.Pairing
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Pairing</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PairingId" />
+            <div class="form-group">
+                <label asp-for="TournamentId" class="control-label"></label>
+                <input asp-for="TournamentId" class="form-control" />
+                <span asp-validation-for="TournamentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="JudgeId" class="control-label"></label>
+                <input asp-for="JudgeId" class="form-control" />
+                <span asp-validation-for="JudgeId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoomId" class="control-label"></label>
+                <input asp-for="RoomId" class="form-control" />
+                <span asp-validation-for="RoomId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AffirmativeTeamId" class="control-label"></label>
+                <input asp-for="AffirmativeTeamId" class="form-control" />
+                <span asp-validation-for="AffirmativeTeamId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NegativeTeamId" class="control-label"></label>
+                <input asp-for="NegativeTeamId" class="form-control" />
+                <span asp-validation-for="NegativeTeamId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RoundId" class="control-label"></label>
+                <input asp-for="RoundId" class="form-control" />
+                <span asp-validation-for="RoundId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DebateId" class="control-label"></label>
+                <input asp-for="DebateId" class="form-control" />
+                <span asp-validation-for="DebateId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
