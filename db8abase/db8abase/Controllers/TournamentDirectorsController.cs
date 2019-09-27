@@ -61,24 +61,7 @@ namespace db8abase.Controllers
             School school = _context.School.FirstOrDefault(s => s.SchoolId == Id);
             return View(school);
         }
-        // POST: TournamentDirectors/SelectSchool
-        [HttpPost]
-        //public IActionResult SelectSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
-        //{
-        //    var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);
-        //    var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
-        //    var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-        //    var tournamentToAdd = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
-        //    tournamentDirector = currentDirector;
-        //    tournamentDirector.SchoolId = selectedSchool.SchoolId;
-        //    tournamentToAdd.School = selectedSchool;
-        //    _context.Attach(tournamentDirector);
-        //    _context.Attach(tournamentToAdd);
-        //    _context.SaveChanges();
-        //    return RedirectToAction("GetRoomsList", "TournamentDirectors");
-        //}
-
-        // GET: TournamentDirectors/SelectRegistrationSchool
+        
         public IActionResult SelectSchool([Bind("SchoolId")] TournamentDirector tournamentDirector, int id)
         {
             var selectedSchool = _context.School.FirstOrDefault(s => s.SchoolId == id);

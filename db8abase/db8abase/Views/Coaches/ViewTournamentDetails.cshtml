@@ -1,0 +1,58 @@
+﻿@model db8abase.Models.ViewModels.CoachesViewTournamentDetailsViewModel
+@using Microsoft.Extensions.Options
+@using System.Globalization
+@inject IOptions<db8abase.Data.StripeSettings> Stripe
+
+@{
+    ViewData["Title"] = "ViewTournamentDetails";
+}
+<br />
+<br />
+<h1 style="text-align:center; text-decoration:underline">@Html.DisplayFor(model => model.Tournament.Name) Entry Details</h1>
+<br />
+<br />
+<div class="row">
+    <div class="col-sm-5">
+        <h3 style="text-decoration:underline; text-align:center">My Entries</h3>
+        <br />
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Team</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Teams)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.IndividualTeamName)
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-2"></div>
+    <div class="col-sm-5">
+        <h3 style="text-decoration:underline; text-align:center">Payment Details</h3>
+        <br />
+        <p>Fees Due: $@Html.DisplayFor(model => model.Coach.Balance)</p>
+        <br />
+        <form action="/Coaches/Charge" method="POST">
+            @{
+                var balance = Model.Coach.Balance * 1;
+            }
+            <article>
+                <label>Amount: @balance.ToString("C", CultureInfo.CurrentCulture)</label>
+            </article>
+            <script src="//checkout.stripe.com/v2/checkout.js"
+                    class="stripe-button"
+                    data-key="@Stripe.Value.PublishableKey"
+                    data-locale="auto"
+                    data-description="Sample Charge"
+                    data-amount="">
+            </script>
+        </form>
+    </div>
+</div>

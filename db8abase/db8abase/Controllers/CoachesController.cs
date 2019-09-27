@@ -9,6 +9,7 @@ using db8abase.Data;
 using db8abase.Models;
 using System.Security.Claims;
 using db8abase.Models.ViewModels;
+using Stripe;
 
 namespace db8abase.Controllers
 {
@@ -198,6 +199,68 @@ namespace db8abase.Controllers
                 });
             }
             return items;
+        }
+
+        // GET: Coaches/ViewTournamentDetails
+        public IActionResult ViewTournamentDetails(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<IndividualTeam> teams = GetMyEntries(id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            Coach currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+
+            CoachesViewTournamentDetailsViewModel coachesViewTournamentDetailsViewModel = new CoachesViewTournamentDetailsViewModel()
+            {
+                Tournament = tournament,
+                Teams = teams,
+                Coach = currentCoach,
+            };
+            return View(coachesViewTournamentDetailsViewModel);
+        }
+        [HttpPost]
+        public IActionResult Charge(string stripeEmail, string stripeToken)
+        {
+            var customers = new CustomerService();
+            var charges = new ChargeService();
+            var customer = customers.Create(new CustomerCreateOptions
+            {
+                Email = stripeEmail,
+                Source = stripeToken
+            });
+
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var coach = _context.Coach.FirstOrDefault(m => m.ApplicationUserId == currentUserId);
+
+            var charge = charges.Create(new ChargeCreateOptions
+            {
+                Amount = Convert.ToInt64(coach.Balance * 100),
+                Description = "Sample Charge",
+                Currency = "usd",
+                CustomerId = customer.Id
+            });
+            coach.Balance = 0;
+            _context.SaveChanges();
+            return RedirectToAction("ViewTournamentDetails", "Coaches");
+        }
+        public List<IndividualTeam> GetMyEntries(int id)
+        {
+            List<IndividualTeam> teams = new List<IndividualTeam>();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var entries = _context.TeamEntry.Where(t => t.TournamentId == id).ToList();
+            var individualTeams = _context.IndividualTeam.ToList();
+            foreach (var entry in entries)
+            {
+                for (int i = 0; i < individualTeams.Count; i++)
+                {
+                    if (entry.IndividualTeamId == individualTeams[i].IndividualTeamId)
+                    {
+                        var locatedTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == individualTeams[i].IndividualTeamId && t.CoachId == currentCoach.CoachId);
+                        teams.Add(locatedTeam);
+                    }
+                }
+            }
+            return teams;
         }
 
         // GET: Coaches/SelectSchool

@@ -12,9 +12,9 @@
     <title>TournamentManagement</title>
 </head>
 <body>
-    <p>
-        <a asp-action="Create">Create New</a>
-    </p>
+    <br />
+    <br />
+   <h1 style="text-align:center; text-decoration:underline">Tournament Listing</h1>
     <table class="table">
         <thead>
             <tr>
@@ -43,7 +43,7 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Name)
                     </td>
-                    <td>
+                    <td style="text-align: center">
                         @Html.DisplayFor(modelItem => item.NumberOfRounds)
                     </td>
                     <td>
@@ -52,7 +52,8 @@
                     <td>
                         <a asp-controller="Home" asp-action="GetTournamentListing" asp-route-id="@item.TournamentId">Tournament Details</a> |
                         <a asp-action="EnterTeams" asp-route-id="@item.TournamentId">Enter Teams</a> |
-                        <a asp-action="EnterJudges" asp-route-id="@item.TournamentId">Enter Judges</a>
+                        <a asp-action="EnterJudges" asp-route-id="@item.TournamentId">Enter Judges</a> |
+                        <a asp-action="ViewTournamentDetails" asp-route-id="@item.TournamentId">My Entries</a>
                     </td>
                 </tr>
             }

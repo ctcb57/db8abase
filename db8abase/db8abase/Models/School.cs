@@ -15,6 +15,7 @@ namespace db8abase.Models
         [ForeignKey("Address Id")]
         public int AddressId { get; set; }
         public Address Address { get; set; }
+
         [ForeignKey("Tournament Director Id")]
         public int TournamentDirectorId { get; set; }
         [ForeignKey("Coach Id")]
