@@ -30,10 +30,41 @@
     </ul>
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade active show" id="tournamentDetails">
+            <br />
+
             <p>School: @Html.DisplayFor(model => model.School.Name)</p>
-            <p>City: @Html.DisplayFor(model => model.Address.City), @Html.DisplayFor(model => model.Address.StateAbbreviation)</p>
+            <p>Address: @Html.DisplayFor(model => model.Address.StreetAddress)</p>
+            <p>City: @Html.DisplayFor(model => model.Address.City), @Html.DisplayFor(model => model.Address.StateAbbreviation), @Html.DisplayFor(Model => Model.Address.ZipCode)</p>
             <p>Rounds: @Html.DisplayFor(model => model.Tournament.NumberOfRounds)</p>
             <p>Team Limit: @Html.DisplayFor(model => model.Tournament.TeamLimit)</p>
+            <html>
+            <head>
+                <style>
+                    #map {
+                        width: 100%;
+                        height: 400px;
+                        background-color: grey;
+                    }
+                </style>
+            </head>
+            <body>
+                    <br />
+                    <h3 style="text-decoration:underline">Tournament Location</h3>
+                    @*Div element for the map*@
+                    <div id="map"></div>
+                    <script>
+            function initMap() {
+                var location = { lat: @Html.DisplayFor(model => model.Address.Latitude), lng: @Html.DisplayFor(model => model.Address.Longitude) };
+                var map = new google.maps.Map(
+                    document.getElementById('map'), { zoom: 15, center: location });
+                var marker = new google.maps.Marker({ position: location, map: map });
+                        }
+                    </script>
+                    <script async defer
+                            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIaSyszdePzB--CUsVR8OCc2wMJtLW0Q&callback=initMap">
+                    </script>
+            </body>
+            </html>
         </div>
         <div class="tab-pane fade" id="teamList">
             <table class="table">

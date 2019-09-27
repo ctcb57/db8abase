@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using db8abase.Models;
 using db8abase.Data;
 using db8abase.Models.ViewModels;
+using db8abase.Utility;
+using Newtonsoft.Json;
+using System.Net;
 
 namespace db8abase.Controllers
 {
@@ -59,6 +62,7 @@ namespace db8abase.Controllers
             var judge = _context.Judge.FirstOrDefault(j => j.JudgeId == id);
             return View(judge);
         }
+
 
         // GET: Details
         public IActionResult Details(int id)

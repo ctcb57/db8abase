@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
 using System.Security.Claims;
+using db8abase.Utility;
+using Newtonsoft.Json;
+using System.Net;
 
 namespace db8abase.Controllers
 {
@@ -50,6 +53,21 @@ namespace db8abase.Controllers
             return View(listOfSchools);
         }
 
+        public string ConvertAddressToGoogleFormat(Address address)
+        {
+            string googleFormatAddress = address.StreetAddress + "," + address.City + "," + address.StateAbbreviation + "," + address.ZipCode + "," + address.Country;
+            return googleFormatAddress;
+        }
+
+        public GeoCode GeoLocate(string address)
+        {
+            var key = Keys.GoogleGeoCodeAPIKey;
+            var requestUrl = $"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={key}";
+            var result = new WebClient().DownloadString(requestUrl);
+            GeoCode geocode = JsonConvert.DeserializeObject<GeoCode>(result);
+            return geocode;
+        }
+
         // GET: Schools/Create
         public IActionResult Create()
         {
@@ -78,6 +96,10 @@ namespace db8abase.Controllers
                     Address address = new Address();
                     address = school.Address;
                     address.Country = "USA";
+                    string addressToConvert = ConvertAddressToGoogleFormat(address);
+                    var geoLocate = GeoLocate(addressToConvert);
+                    address.Longitude = geoLocate.results[0].geometry.location.lng;
+                    address.Latitude = geoLocate.results[0].geometry.location.lat;
                     _context.Add(school);
                     _context.Add(address);
                     await _context.SaveChangesAsync();
@@ -95,6 +117,10 @@ namespace db8abase.Controllers
                     Address address = new Address();
                     address = school.Address;
                     address.Country = "USA";
+                    string addressToConvert = ConvertAddressToGoogleFormat(address);
+                    var geoLocate = GeoLocate(addressToConvert);
+                    address.Longitude = geoLocate.results[0].geometry.location.lng;
+                    address.Latitude = geoLocate.results[0].geometry.location.lat;
                     _context.Add(school);
                     _context.Add(address);
                     await _context.SaveChangesAsync();
