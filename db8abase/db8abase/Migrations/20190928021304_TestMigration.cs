@@ -70,6 +70,28 @@ namespace db8abase.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Ballot",
+                columns: table => new
+                {
+                    BallotId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    JudgeId = table.Column<int>(nullable: false),
+                    RoundId = table.Column<int>(nullable: false),
+                    TournamentId = table.Column<int>(nullable: false),
+                    DebateId = table.Column<int>(nullable: false),
+                    FirstAffSpeakerPoints = table.Column<double>(nullable: false),
+                    SecondAffSpeakerPoints = table.Column<double>(nullable: false),
+                    FirstNegSpeakerPoints = table.Column<double>(nullable: false),
+                    SecondNegSpeakerPoints = table.Column<double>(nullable: false),
+                    WinnerId = table.Column<int>(nullable: false),
+                    ReasonForDecision = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ballot", x => x.BallotId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Coach",
                 columns: table => new
                 {
@@ -529,6 +551,9 @@ namespace db8abase.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Ballot");
 
             migrationBuilder.DropTable(
                 name: "Coach");

@@ -210,6 +210,37 @@ namespace db8abase.Migrations
                     b.ToTable("Address");
                 });
 
+            modelBuilder.Entity("db8abase.Models.Ballot", b =>
+                {
+                    b.Property<int>("BallotId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DebateId");
+
+                    b.Property<double>("FirstAffSpeakerPoints");
+
+                    b.Property<double>("FirstNegSpeakerPoints");
+
+                    b.Property<int>("JudgeId");
+
+                    b.Property<string>("ReasonForDecision");
+
+                    b.Property<int>("RoundId");
+
+                    b.Property<double>("SecondAffSpeakerPoints");
+
+                    b.Property<double>("SecondNegSpeakerPoints");
+
+                    b.Property<int>("TournamentId");
+
+                    b.Property<int>("WinnerId");
+
+                    b.HasKey("BallotId");
+
+                    b.ToTable("Ballot");
+                });
+
             modelBuilder.Entity("db8abase.Models.Coach", b =>
                 {
                     b.Property<int>("CoachId")

@@ -31,5 +31,6 @@ namespace db8abase.Data
         public DbSet<Debate> Debate { get; set; }
         public DbSet<Round> Round { get; set; }
         public DbSet<TournamentResults> TournamentResults { get; set; }
+        public DbSet<Ballot> Ballot { get; set; }
     }
 }
