@@ -35,16 +35,12 @@ namespace db8abase.Controllers
         // GET: PairRoundOne
         public IActionResult PairRoundOne(int id)
         {
+            PushRoundOnePairing(id);
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<Room> rooms = GetRooms(id);
             List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
             List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
             List<Judge> judges = AssignRoundOneJudges(id);
-            //Round round = new Round();
-            //round.RoundNumber = 1;
-            //round.RoundType = "prelim";
-            //_context.Add(round);
-            //_context.SaveChanges();
 
             PairingsTabulationViewModel viewModelData = new PairingsTabulationViewModel()
             {
@@ -56,6 +52,55 @@ namespace db8abase.Controllers
                 //Round = round,
             };
             return View(viewModelData);
+        }
+        public void PushRoundOnePairing(int id)
+        {
+            Round round = CreateRoundOne();
+            CreateRoundOneDebate(id);
+            List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
+            List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
+            List<Judge> judges = GetJudges(id);
+            for(int i = 0; i < affirmativeTeams.Count(); i++)
+            {
+                Pairing pairing = new Pairing();
+                pairing.TournamentId = id;
+                pairing.RoundId = round.RoundId;
+                pairing.AffirmativeTeamId = affirmativeTeams[i].IndividualTeamId;
+                pairing.NegativeTeamId = negativeTeams[i].IndividualTeamId;
+                pairing.JudgeId = judges[i].JudgeId;
+                pairing.DebateId = _context.Debate.Where(d => d.JudgeId == pairing.JudgeId && d.AffirmativeTeamId == pairing.AffirmativeTeamId && d.NegativeTeamId == pairing.NegativeTeamId).Single().DebateId;
+                pairing.RoomId = _context.Debate.Where(d => d.DebateId == pairing.DebateId).Single().RoomId;
+                _context.Add(pairing);
+                _context.SaveChanges();
+            }
+        }
+
+        public Round CreateRoundOne()
+        {
+            Round round = new Round();
+            round.RoundNumber = 1;
+            round.RoundType = "prelim";
+            _context.Add(round);
+            _context.SaveChanges();
+            return round;
+        }
+
+        public void CreateRoundOneDebate(int id)
+        {
+            List<Room> rooms = GetRooms(id);
+            List<Judge> judges = GetJudges(id);
+            List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
+            List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
+            for(int i = 0; i < affirmativeTeams.Count(); i++)
+            {
+                Debate debate = new Debate();
+                debate.RoomId = rooms[i].RoomId;
+                debate.JudgeId = judges[i].JudgeId;
+                debate.AffirmativeTeamId = affirmativeTeams[i].IndividualTeamId;
+                debate.NegativeTeamId = negativeTeams[i].IndividualTeamId;
+                _context.Add(debate);
+                _context.SaveChanges();
+            }
         }
 
         public List<Room> GetRooms(int id)

@@ -18,7 +18,5 @@ namespace db8abase.Models
         [Display(Name = "Start Time")]
         [DataType(DataType.Time)]
         public DateTime StartTime { get; set; }
-        [NotMapped]
-        public List<Debate> Debates { get; set; }
     }
 }

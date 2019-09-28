@@ -249,8 +249,6 @@ namespace db8abase.Migrations
 
                     b.Property<int>("RoomId");
 
-                    b.Property<string>("Winner");
-
                     b.HasKey("DebateId");
 
                     b.ToTable("Debate");
@@ -452,21 +450,6 @@ namespace db8abase.Migrations
                     b.ToTable("School");
                 });
 
-            modelBuilder.Entity("db8abase.Models.Team", b =>
-                {
-                    b.Property<int>("TeamId")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("CoachId");
-
-                    b.Property<int>("SchoolId");
-
-                    b.HasKey("TeamId");
-
-                    b.ToTable("Team");
-                });
-
             modelBuilder.Entity("db8abase.Models.TeamEntry", b =>
                 {
                     b.Property<int>("EntryId")
@@ -536,6 +519,29 @@ namespace db8abase.Migrations
                     b.HasKey("TournamentDirectorId");
 
                     b.ToTable("TournamentDirector");
+                });
+
+            modelBuilder.Entity("db8abase.Models.TournamentResults", b =>
+                {
+                    b.Property<int>("ResultsId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("EliminationRoundResult");
+
+                    b.Property<int>("IndividualTeamId");
+
+                    b.Property<int>("SpeakerPoints");
+
+                    b.Property<int>("TeamLosses");
+
+                    b.Property<int>("TeamWins");
+
+                    b.Property<int>("TournamentId");
+
+                    b.HasKey("ResultsId");
+
+                    b.ToTable("TournamentResults");
                 });
 
             modelBuilder.Entity("db8abase.Models.ApplicationUser", b =>

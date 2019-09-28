@@ -21,7 +21,6 @@ namespace db8abase.Data
         public DbSet<Coach> Coach { get; set; }
         public DbSet<Debater> Debater { get; set; }
         public DbSet<Tournament> Tournament { get; set; }
-        public DbSet<Team> Team { get; set; }
         public DbSet<Judge> Judge { get; set; }
         public DbSet<IndividualTeam> IndividualTeam { get; set; }
         public DbSet<Room> Room { get; set; }
@@ -31,5 +30,6 @@ namespace db8abase.Data
         public DbSet<Pairing> Pairing { get; set; }
         public DbSet<Debate> Debate { get; set; }
         public DbSet<Round> Round { get; set; }
+        public DbSet<TournamentResults> TournamentResults { get; set; }
     }
 }

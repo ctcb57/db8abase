@@ -97,8 +97,7 @@ namespace db8abase.Migrations
                     RoomId = table.Column<int>(nullable: false),
                     JudgeId = table.Column<int>(nullable: false),
                     AffirmativeTeamId = table.Column<int>(nullable: false),
-                    NegativeTeamId = table.Column<int>(nullable: false),
-                    Winner = table.Column<string>(nullable: true)
+                    NegativeTeamId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -211,20 +210,6 @@ namespace db8abase.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Team",
-                columns: table => new
-                {
-                    TeamId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    SchoolId = table.Column<int>(nullable: false),
-                    CoachId = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Team", x => x.TeamId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "TeamEntry",
                 columns: table => new
                 {
@@ -256,6 +241,24 @@ namespace db8abase.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TournamentDirector", x => x.TournamentDirectorId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TournamentResults",
+                columns: table => new
+                {
+                    ResultsId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TournamentId = table.Column<int>(nullable: false),
+                    IndividualTeamId = table.Column<int>(nullable: false),
+                    TeamWins = table.Column<int>(nullable: false),
+                    TeamLosses = table.Column<int>(nullable: false),
+                    SpeakerPoints = table.Column<int>(nullable: false),
+                    EliminationRoundResult = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TournamentResults", x => x.ResultsId);
                 });
 
             migrationBuilder.CreateTable(
@@ -552,9 +555,6 @@ namespace db8abase.Migrations
                 name: "Round");
 
             migrationBuilder.DropTable(
-                name: "Team");
-
-            migrationBuilder.DropTable(
                 name: "TeamEntry");
 
             migrationBuilder.DropTable(
@@ -562,6 +562,9 @@ namespace db8abase.Migrations
 
             migrationBuilder.DropTable(
                 name: "TournamentDirector");
+
+            migrationBuilder.DropTable(
+                name: "TournamentResults");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
