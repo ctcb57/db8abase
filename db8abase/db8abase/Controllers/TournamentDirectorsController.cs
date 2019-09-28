@@ -130,7 +130,7 @@ namespace db8abase.Controllers
             var currentTournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
             return View(currentTournament);
         }
-        
+
 
         // GET: TournamentDirectors/Edit/5
         public async Task<IActionResult> Edit()

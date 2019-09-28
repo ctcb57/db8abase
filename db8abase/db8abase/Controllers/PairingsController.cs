@@ -32,10 +32,31 @@ namespace db8abase.Controllers
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             return View(tournament);
         }
+
+        
         // GET: PairRoundOne
         public IActionResult PairRoundOne(int id)
         {
             
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = GetRooms(id);
+            List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
+            List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
+            List<Judge> judges = AssignRoundOneJudges(id);
+
+            PairingsTabulationViewModel viewModelData = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affirmativeTeams,
+                NegativeTeams = negativeTeams,
+                Judges = judges,
+            };
+            return View(viewModelData);
+        }
+
+        public IActionResult PairingsView(int id)
+        {
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<Room> rooms = GetRooms(id);
             List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
@@ -77,6 +98,7 @@ namespace db8abase.Controllers
         public IActionResult SendRoundOnePairing(int id)
         {
             PushRoundOnePairing(id);
+            CreateRoundOneBallots(id);
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             return View(tournament);
         }

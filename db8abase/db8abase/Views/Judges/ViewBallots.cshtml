@@ -1,0 +1,28 @@
+﻿@model IEnumerable<db8abase.Models.Ballot>
+
+@{
+    ViewData["Title"] = "ViewBallots";
+}
+<br />
+<br />
+<h1 style="text-align:center; text-decoration:underline">My Ballots</h1>
+<br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th style="text-align:center">
+                Ballots
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td style="text-align:center">
+                <a asp-action="ViewBallot" asp-route-id="@item.BallotId">View Ballot @Html.DisplayFor(modelItem => item.BallotId)</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -80,6 +80,14 @@ namespace db8abase.Controllers
             return View(judge);
         }
 
+        public IActionResult ViewBallots()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            List<Ballot> ballots = _context.Ballot.Where(b => b.JudgeId == currentJudge.JudgeId).ToList();
+            return View(ballots);
+        }
+
         // POST: Judges/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
