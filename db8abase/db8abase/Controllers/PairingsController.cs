@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
+using db8abase.Models.ViewModels;
 
 namespace db8abase.Controllers
 {
@@ -31,10 +32,30 @@ namespace db8abase.Controllers
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             return View(tournament);
         }
-
+        // GET: PairRoundOne
         public IActionResult PairRoundOne(int id)
         {
-            return View()
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = GetRooms(id);
+            List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
+            List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
+            List<Judge> judges = AssignRoundOneJudges(id);
+            //Round round = new Round();
+            //round.RoundNumber = 1;
+            //round.RoundType = "prelim";
+            //_context.Add(round);
+            //_context.SaveChanges();
+
+            PairingsTabulationViewModel viewModelData = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affirmativeTeams,
+                NegativeTeams = negativeTeams,
+                Judges = judges,
+                //Round = round,
+            };
+            return View(viewModelData);
         }
 
         public List<Room> GetRooms(int id)
@@ -50,10 +71,88 @@ namespace db8abase.Controllers
             return neededRooms;
         }
 
-        public List<TeamEntry> GetEntries(int id)
+        public List<IndividualTeam> GetRoundOneAffirmativeTeams(int id)
         {
-
+            List<IndividualTeam> affirmativeTeams = new List<IndividualTeam>();
+            List<IndividualTeam> enteredTeams = GetTeams(id);
+            int teamCount = enteredTeams.Count();
+            for(int i = 0; i < teamCount / 2; i++)
+            {
+                affirmativeTeams.Add(enteredTeams[i]);
+            }
+            return affirmativeTeams;
         }
+
+        public List<Judge> AssignRoundOneJudges(int id)
+        {
+            List<Judge> assignedJudges = new List<Judge>();
+            List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
+            List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
+            List<Judge> judges = GetJudges(id);
+            for(int i = 0; i < affirmativeTeams.Count; i++)
+            {
+                foreach(var judge in judges)
+                {
+                    if(judge.SchoolId != affirmativeTeams[i].SchoolId && judge.SchoolId != negativeTeams[i].SchoolId)
+                    {
+                        assignedJudges.Add(judge);
+                        judges.Remove(judge);
+                        break;
+                    }
+                }
+            }
+            return assignedJudges;
+        }
+
+        public List<IndividualTeam> GetRoundOneNegativeTeams(int id)
+        {
+            List<IndividualTeam> negativeTeams = new List<IndividualTeam>();
+            List<IndividualTeam> enteredTeams = GetTeams(id);
+            int teamCount = enteredTeams.Count();
+            for(int i = teamCount; i > teamCount / 2; i--)
+            {
+                negativeTeams.Add(enteredTeams[i - 1]);
+            }
+            return negativeTeams;
+        }
+
+        public List<IndividualTeam> GetTeams(int id)
+        {
+            List<IndividualTeam> teams = new List<IndividualTeam>();
+            var entries = _context.TeamEntry.Where(t => t.TournamentId == id).ToList();
+            var individualTeams = _context.IndividualTeam.ToList();
+            foreach (var entry in entries)
+            {
+                for (int i = 0; i < individualTeams.Count; i++)
+                {
+                    if (entry.IndividualTeamId == individualTeams[i].IndividualTeamId)
+                    {
+                        var locatedTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == individualTeams[i].IndividualTeamId);
+                        teams.Add(locatedTeam);
+                    }
+                }
+            }
+            return teams;
+        }
+        public List<Judge> GetJudges(int id)
+        {
+            List<Judge> judges = new List<Judge>();
+            var entries = _context.JudgeEntry.Where(t => t.TournamentId == id).ToList();
+            var individualJudges = _context.Judge.ToList();
+            foreach (var entry in entries)
+            {
+                for (int i = 0; i < individualJudges.Count; i++)
+                {
+                    if (entry.JudgeId == individualJudges[i].JudgeId)
+                    {
+                        var locatedJudge = _context.Judge.FirstOrDefault(t => t.JudgeId == individualJudges[i].JudgeId);
+                        judges.Add(locatedJudge);
+                    }
+                }
+            }
+            return judges;
+        }
+
 
 
 

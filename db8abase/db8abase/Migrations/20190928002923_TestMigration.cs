@@ -89,6 +89,23 @@ namespace db8abase.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Debate",
+                columns: table => new
+                {
+                    DebateId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RoomId = table.Column<int>(nullable: false),
+                    JudgeId = table.Column<int>(nullable: false),
+                    AffirmativeTeamId = table.Column<int>(nullable: false),
+                    NegativeTeamId = table.Column<int>(nullable: false),
+                    Winner = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Debate", x => x.DebateId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Debater",
                 columns: table => new
                 {
@@ -145,6 +162,26 @@ namespace db8abase.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Pairing",
+                columns: table => new
+                {
+                    PairingId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    TournamentId = table.Column<int>(nullable: false),
+                    JudgeId = table.Column<int>(nullable: false),
+                    RoomId = table.Column<int>(nullable: false),
+                    AffirmativeTeamId = table.Column<int>(nullable: false),
+                    NegativeTeamId = table.Column<int>(nullable: false),
+                    RoundId = table.Column<int>(nullable: false),
+                    DebateId = table.Column<int>(nullable: false),
+                    WinnerId = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Pairing", x => x.PairingId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Room",
                 columns: table => new
                 {
@@ -156,6 +193,21 @@ namespace db8abase.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Room", x => x.RoomId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Round",
+                columns: table => new
+                {
+                    RoundId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    RoundNumber = table.Column<int>(nullable: false),
+                    RoundType = table.Column<string>(nullable: true),
+                    StartTime = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Round", x => x.RoundId);
                 });
 
             migrationBuilder.CreateTable(
@@ -479,6 +531,9 @@ namespace db8abase.Migrations
                 name: "Coach");
 
             migrationBuilder.DropTable(
+                name: "Debate");
+
+            migrationBuilder.DropTable(
                 name: "IndividualTeam");
 
             migrationBuilder.DropTable(
@@ -488,7 +543,13 @@ namespace db8abase.Migrations
                 name: "JudgeEntry");
 
             migrationBuilder.DropTable(
+                name: "Pairing");
+
+            migrationBuilder.DropTable(
                 name: "Room");
+
+            migrationBuilder.DropTable(
+                name: "Round");
 
             migrationBuilder.DropTable(
                 name: "Team");

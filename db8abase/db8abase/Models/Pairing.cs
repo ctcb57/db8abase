@@ -25,6 +25,8 @@ namespace db8abase.Models
         public int RoundId { get; set; }
         [ForeignKey("Debate Id")]
         public int DebateId { get; set; }
+        [ForeignKey("Winner Id")]
+        public int WinnerId { get; set; }
 
 
     }

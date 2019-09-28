@@ -28,6 +28,8 @@ namespace db8abase.Data
         public DbSet<TeamEntry> TeamEntry { get; set; }
         public DbSet<JudgeEntry> JudgeEntry { get; set; }
         public DbSet<Address> Address { get; set; }
-        public DbSet<db8abase.Models.Pairing> Pairing { get; set; }
+        public DbSet<Pairing> Pairing { get; set; }
+        public DbSet<Debate> Debate { get; set; }
+        public DbSet<Round> Round { get; set; }
     }
 }

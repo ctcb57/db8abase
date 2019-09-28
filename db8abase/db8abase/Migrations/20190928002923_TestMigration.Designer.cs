@@ -10,7 +10,7 @@ using db8abase.Data;
 namespace db8abase.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190927193344_TestMigration")]
+    [Migration("20190928002923_TestMigration")]
     partial class TestMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,6 +237,27 @@ namespace db8abase.Migrations
                     b.ToTable("Coach");
                 });
 
+            modelBuilder.Entity("db8abase.Models.Debate", b =>
+                {
+                    b.Property<int>("DebateId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AffirmativeTeamId");
+
+                    b.Property<int>("JudgeId");
+
+                    b.Property<int>("NegativeTeamId");
+
+                    b.Property<int>("RoomId");
+
+                    b.Property<string>("Winner");
+
+                    b.HasKey("DebateId");
+
+                    b.ToTable("Debate");
+                });
+
             modelBuilder.Entity("db8abase.Models.Debater", b =>
                 {
                     b.Property<int>("DebaterId")
@@ -353,6 +374,33 @@ namespace db8abase.Migrations
                     b.ToTable("JudgeEntry");
                 });
 
+            modelBuilder.Entity("db8abase.Models.Pairing", b =>
+                {
+                    b.Property<int>("PairingId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AffirmativeTeamId");
+
+                    b.Property<int>("DebateId");
+
+                    b.Property<int>("JudgeId");
+
+                    b.Property<int>("NegativeTeamId");
+
+                    b.Property<int>("RoomId");
+
+                    b.Property<int>("RoundId");
+
+                    b.Property<int>("TournamentId");
+
+                    b.Property<int>("WinnerId");
+
+                    b.HasKey("PairingId");
+
+                    b.ToTable("Pairing");
+                });
+
             modelBuilder.Entity("db8abase.Models.Room", b =>
                 {
                     b.Property<int>("RoomId")
@@ -366,6 +414,23 @@ namespace db8abase.Migrations
                     b.HasKey("RoomId");
 
                     b.ToTable("Room");
+                });
+
+            modelBuilder.Entity("db8abase.Models.Round", b =>
+                {
+                    b.Property<int>("RoundId")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("RoundNumber");
+
+                    b.Property<string>("RoundType");
+
+                    b.Property<DateTime>("StartTime");
+
+                    b.HasKey("RoundId");
+
+                    b.ToTable("Round");
                 });
 
             modelBuilder.Entity("db8abase.Models.School", b =>
