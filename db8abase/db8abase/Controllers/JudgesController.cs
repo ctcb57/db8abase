@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
 using System.Security.Claims;
+using db8abase.Models.ViewModels;
 
 namespace db8abase.Controllers
 {
@@ -88,6 +89,52 @@ namespace db8abase.Controllers
             return View(ballots);
         }
 
+        public IActionResult ViewBallot(int id)
+        {
+            var teams = BuildTeamList(id);
+            Ballot ballot = _context.Ballot.FirstOrDefault(b => b.BallotId == id);
+            Debate debate = _context.Debate.FirstOrDefault(d => d.DebateId == ballot.DebateId);
+            IndividualTeam affirmativeTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debate.AffirmativeTeamId);
+            IndividualTeam negativeTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debate.NegativeTeamId);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            Judge judge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Round round = _context.Round.FirstOrDefault(r => r.RoundId == ballot.DebateId);
+
+            JudgesBallotViewModel ballotVM = new JudgesBallotViewModel()
+            {
+                Ballot = ballot,
+                AffirmativeTeam = affirmativeTeam,
+                NegativeTeam = negativeTeam,
+                Round = round,
+                Debate = debate,
+                Judge = judge,
+                Team = "Team",
+                TeamsInRound = teams,
+            };
+            return View(ballotVM);
+        }
+
+        public IEnumerable<SelectListItem> BuildTeamList(int id)
+        {
+            List<SelectListItem> teamsToChoose = new List<SelectListItem>();
+            Ballot ballot = _context.Ballot.FirstOrDefault(b => b.BallotId == id);
+            Debate debate = _context.Debate.FirstOrDefault(d => d.DebateId == ballot.DebateId);
+            IndividualTeam affirmativeTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debate.AffirmativeTeamId);
+            IndividualTeam negativeTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debate.NegativeTeamId);
+            List<IndividualTeam> teams = new List<IndividualTeam>();
+            teams.Add(affirmativeTeam);
+            teams.Add(negativeTeam);
+            foreach(var team in teams)
+            {
+                teamsToChoose.Add(
+                                    new SelectListItem
+                                    {
+                                        Value = team.IndividualTeamId.ToString(),
+                                        Text = team.IndividualTeamName,
+                                    });
+            }
+            return teamsToChoose;
+        }
         // POST: Judges/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
