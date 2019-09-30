@@ -170,6 +170,15 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             return round;
         }
+        public Round CreateRoundTwo()
+        {
+            Round round = new Round();
+            round.RoundNumber = 2;
+            round.RoundType = "prelim";
+            _context.Add(round);
+            _context.SaveChanges();
+            return round;
+        }
 
         public void CreateRoundOneDebate(int id)
         {
@@ -315,6 +324,7 @@ namespace db8abase.Controllers
             List<IndividualTeam> affTeams = GetRoundTwoAffirmativeTeams(id);
             List<IndividualTeam> negTeams = GetRoundTwoNegativeTeams(id);
             List<Judge> judges = AssignRoundTwoJudges(affTeams, negTeams, id);
+            PushRoundTwoPairing(id, affTeams, negTeams, judges, rooms);
 
             PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
             {
@@ -325,6 +335,74 @@ namespace db8abase.Controllers
                 Judges = judges,
             };
             return View(pairingVM);
+        }
+
+        public IActionResult SendRoundTwoPairing(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            return View(tournament);
+        }
+        
+        public void CreateRoundTwoBallots(int id, List<Pairing> pairings)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            for(int i = 0; i < pairings.Count(); i++)
+            {
+                Ballot ballot = new Ballot();
+                ballot.JudgeId = pairings[i].JudgeId;
+                ballot.RoundId = pairings[i].RoundId;
+                ballot.TournamentId = id;
+                ballot.DebateId = pairings[i].DebateId;
+                _context.Add(ballot);
+                _context.SaveChanges();
+            }
+        }
+        
+
+        public void PushRoundTwoPairing(int id, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, List<Room> rooms)
+        {
+            Round round = CreateRoundTwo();
+            CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
+            List<Pairing> pairings = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
+            CreateRoundTwoBallots(id, pairings);
+        }
+        public void CreateRoundTwoDebate(int id, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, List<Room> rooms)
+        {
+            for(int i = 0; i < affTeams.Count(); i++)
+            {
+                Debate debate = new Debate();
+                debate.RoomId = rooms[i].RoomId;
+                debate.JudgeId = judges[i].JudgeId;
+                debate.AffirmativeTeamId = affTeams[i].IndividualTeamId;
+                debate.NegativeTeamId = negTeams[i].IndividualTeamId;
+                _context.Add(debate);
+                _context.SaveChanges();
+            }
+        }
+        public List<Pairing> CreateRoundTwoPairing(int id, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, Round round)
+        {
+            List<Pairing> pairings = new List<Pairing>();
+            for (int i = 0; i < affTeams.Count(); i++)
+            {
+                IndividualTeam affTeam = affTeams[i];
+                IndividualTeam negTeam = negTeams[i];
+                Pairing pairing = new Pairing();
+                pairing.TournamentId = id;
+                pairing.RoundId = round.RoundId;
+                pairing.AffirmativeTeamId = affTeams[i].IndividualTeamId;
+                pairing.NegativeTeamId = negTeams[i].IndividualTeamId;
+                pairing.JudgeId = judges[i].JudgeId;
+                pairing.DebateId = _context.Debate.Where(d => d.JudgeId == pairing.JudgeId && d.AffirmativeTeamId == pairing.AffirmativeTeamId && d.NegativeTeamId == pairing.NegativeTeamId).Single().DebateId;
+                pairing.RoomId = _context.Debate.Where(d => d.DebateId == pairing.DebateId).Single().RoomId;
+                affTeam.TournamentAffirmativeRounds++;
+                negTeam.TournamentNegativeRounds++;
+                _context.Add(pairing);
+                _context.Update(affTeam);
+                _context.Update(negTeam);
+                _context.SaveChanges();
+                pairings.Add(pairing);
+            }
+            return pairings;
         }
 
         public List<IndividualTeam> GetRoundTwoAffirmativeTeams(int id)
@@ -389,22 +467,24 @@ namespace db8abase.Controllers
                     i++;
                 }
                 j++;
-                if(j == 10)
+                if(j == (roundTwoAffTeams.Count() * 4))
                 {
-                    for(int k = 0; k < roundTwoNegTeams.Count(); k++)
+                    int k = 0;
+                    while (roundTwoNegTeams.Count() > 0)
                     {
                         roundTwoNegTeams.Remove(roundTwoNegTeams[k]);
+                        i--;
                     }
                     while (roundTwoNegTeams.Count() < roundTwoAffTeams.Count())
                     {
                         var pairing2 = pairings.Where(r => r.NegativeTeamId == roundTwoAffTeams[i].IndividualTeamId).Single();
                         var random2 = new Random();
                         int index2 = random.Next(negTeams.Count);
-                        var team2 = negTeams[index];
-                        if (pairing.AffirmativeTeamId != team.IndividualTeamId)
+                        var team2 = negTeams[index2];
+                        if (pairing2.AffirmativeTeamId != team.IndividualTeamId)
                         {
-                            roundTwoNegTeams.Add(team);
-                            negTeams.Remove(team);
+                            roundTwoNegTeams.Add(team2);
+                            negTeams.Remove(team2);
                             i++;
                         }
                     }
