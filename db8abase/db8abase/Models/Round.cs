@@ -18,5 +18,7 @@ namespace db8abase.Models
         [Display(Name = "Start Time")]
         [DataType(DataType.Time)]
         public DateTime StartTime { get; set; }
+        [ForeignKey("Tournament Id")]
+        public int TournamentId { get; set; }
     }
 }

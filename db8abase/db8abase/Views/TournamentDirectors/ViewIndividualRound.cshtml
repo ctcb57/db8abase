@@ -45,7 +45,7 @@
                     @Html.DisplayFor(model => model.Judges[i].LastName), @Html.DisplayFor(model => model.Judges[i].FirstName)
                 </td>
                 <td>
-                    Ballot Status
+                    @Html.DisplayFor(model => model.Ballots[i].BallotTurnedIn)
                 </td>
             </tr>
         }

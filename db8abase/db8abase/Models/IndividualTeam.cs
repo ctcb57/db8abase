@@ -12,12 +12,17 @@ namespace db8abase.Models
         [Key]
         public int IndividualTeamId { get; set; }
         public string IndividualTeamName { get; set; }
+        [ForeignKey("First Speaker Id")]
+        public int FirstSpeakerId { get; set; }
         public Debater FirstSpeaker { get; set; }
+        [ForeignKey("Second Speaker Id")]
+        public int SecondSpeakerId { get; set; }
 
         public Debater SecondSpeaker { get; set; }
 
         public int SingleTournamentWins { get; set; }
         public int SingleTournamentLosses { get; set; }
+        public double SingleTournamentSpeakerPoints { get; set; }
         public int CumulativeAnnualWins { get; set; }
         public int CumulativeAnnualLosses { get; set; }
         public int CumulativeAnnualElminationRoundWins { get; set; }

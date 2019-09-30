@@ -26,5 +26,6 @@ namespace db8abase.Models
         [ForeignKey("Winner Id")]
         public int WinnerId { get; set; }
         public string ReasonForDecision { get; set; }
+        public bool BallotTurnedIn { get; set; }
     }
 }

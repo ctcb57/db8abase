@@ -85,7 +85,7 @@ namespace db8abase.Controllers
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentJudge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            List<Ballot> ballots = _context.Ballot.Where(b => b.JudgeId == currentJudge.JudgeId).ToList();
+            List<Ballot> ballots = _context.Ballot.Where(b => b.JudgeId == currentJudge.JudgeId && b.BallotTurnedIn == false).ToList();
             return View(ballots);
         }
 
@@ -120,33 +120,36 @@ namespace db8abase.Controllers
             Pairing pairing = _context.Pairing.Where(p => p.JudgeId == data.Ballot.JudgeId && p.RoundId == data.Ballot.RoundId).Single();
             IndividualTeam affTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.AffirmativeTeamId);
             IndividualTeam negTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.NegativeTeamId);
-            //Debater firstAffSpeaker = affTeam.FirstSpeaker;
-            //Debater secondAffSpeaker = affTeam.SecondSpeaker;
-            //Debater firstNegSpeaker = negTeam.FirstSpeaker;
-            //Debater secondNegSpeaker = negTeam.SecondSpeaker;
+            Debater firstAffSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == affTeam.FirstSpeakerId);
+            Debater secondAffSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == affTeam.SecondSpeakerId);
+            Debater firstNegSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == negTeam.FirstSpeakerId);
+            Debater secondNegSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == negTeam.SecondSpeakerId);
             Ballot ballot = data.Ballot;
             var winnerId = int.Parse(data.Winner);
             var loserId = int.Parse(data.Loser);
             IndividualTeam winningTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == winnerId);
             IndividualTeam losingTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == loserId);
-            //firstAffSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.FirstAffSpeakerPoints;
-            //secondAffSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.SecondAffSpeakerPoints;
-            //firstNegSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.FirstNegSpeakerPoints;
-            //secondNegSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.SecondNegSpeakerPoints;
+            firstAffSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.FirstAffSpeakerPoints;
+            secondAffSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.SecondAffSpeakerPoints;
+            firstNegSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.FirstNegSpeakerPoints;
+            secondNegSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.SecondNegSpeakerPoints;
+            affTeam.SingleTournamentSpeakerPoints =+ (firstAffSpeaker.IndividualTournamentSpeakerPoints + secondAffSpeaker.IndividualTournamentSpeakerPoints);
+            negTeam.SingleTournamentSpeakerPoints =+ (firstNegSpeaker.IndividualTournamentSpeakerPoints + secondNegSpeaker.IndividualTournamentSpeakerPoints);
             ballot.WinnerId = winnerId;
             pairing.WinnerId = winnerId;
             winningTeam.SingleTournamentWins++;
             winningTeam.CumulativeAnnualWins++;
             losingTeam.SingleTournamentLosses++;
             losingTeam.CumulativeAnnualLosses++;
+            ballot.BallotTurnedIn = true;
             _context.Update(ballot);
             _context.Update(pairing);
             _context.Update(winningTeam);
             _context.Update(losingTeam);
-            //_context.Update(firstAffSpeaker);
-            //_context.Update(secondAffSpeaker);
-            //_context.Update(firstNegSpeaker);
-            //_context.Update(secondNegSpeaker);
+            _context.Update(firstAffSpeaker);
+            _context.Update(secondAffSpeaker);
+            _context.Update(firstNegSpeaker);
+            _context.Update(secondNegSpeaker);
             _context.SaveChanges();
             return RedirectToAction("BallotSubmission", "Judges");
         }

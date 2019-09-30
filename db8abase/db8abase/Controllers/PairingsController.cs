@@ -75,7 +75,7 @@ namespace db8abase.Controllers
         }
         public void PushRoundOnePairing(int id)
         {
-            Round round = CreateRoundOne();
+            Round round = CreateRoundOne(id);
             CreateRoundOneDebate(id);
             List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
             List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
@@ -156,25 +156,30 @@ namespace db8abase.Controllers
                 ballot.RoundId = pairings[j].RoundId;
                 ballot.TournamentId = id;
                 ballot.DebateId = pairings[j].DebateId;
+                ballot.BallotTurnedIn = false;
                 _context.Add(ballot);
                 _context.SaveChanges();
             }
         }
 
-        public Round CreateRoundOne()
+        public Round CreateRoundOne(int id)
         {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             Round round = new Round();
             round.RoundNumber = 1;
             round.RoundType = "prelim";
+            round.TournamentId = tournament.TournamentId;
             _context.Add(round);
             _context.SaveChanges();
             return round;
         }
-        public Round CreateRoundTwo()
+        public Round CreateRoundTwo(int id)
         {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             Round round = new Round();
             round.RoundNumber = 2;
             round.RoundType = "prelim";
+            round.TournamentId = tournament.TournamentId;
             _context.Add(round);
             _context.SaveChanges();
             return round;
@@ -353,6 +358,7 @@ namespace db8abase.Controllers
                 ballot.RoundId = pairings[i].RoundId;
                 ballot.TournamentId = id;
                 ballot.DebateId = pairings[i].DebateId;
+                ballot.BallotTurnedIn = false;
                 _context.Add(ballot);
                 _context.SaveChanges();
             }
@@ -361,7 +367,7 @@ namespace db8abase.Controllers
 
         public void PushRoundTwoPairing(int id, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, List<Room> rooms)
         {
-            Round round = CreateRoundTwo();
+            Round round = CreateRoundTwo(id);
             CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
             List<Pairing> pairings = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
             CreateRoundTwoBallots(id, pairings);
