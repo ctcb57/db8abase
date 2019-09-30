@@ -14,7 +14,9 @@ namespace db8abase.Models.ViewModels
         public List<IndividualTeam> NegativeTeams { get; set; }
         public IndividualTeam IndividualTeam { get; set; }
         public List<Room> Rooms { get; set; }
+        public List<Ballot> Ballots { get; set; }
         public Room Room { get; set; }
         public Round Round { get; set; }
+        public Ballot Ballot { get; set; }
     }
 }

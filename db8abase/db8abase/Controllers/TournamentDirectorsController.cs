@@ -10,6 +10,7 @@ using db8abase.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using db8abase.Models.ViewModels;
 
 namespace db8abase.Controllers
 {
@@ -80,6 +81,100 @@ namespace db8abase.Controllers
             var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
             var roomList = _context.Room.Where(r => r.SchoolId == currentDirector.SchoolId).ToList();
             return View(roomList);
+        }
+
+        public IActionResult TournamentPortal()
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            Pairing pairing = _context.Pairing.FirstOrDefault(p => p.TournamentId == tournament.TournamentId);
+            Round round = _context.Round.FirstOrDefault(r => r.RoundId == pairing.RoundId);
+            return View(round);
+        }
+
+        public IActionResult ViewIndividualRound(int id)
+        {
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Round round = _context.Round.FirstOrDefault(r => r.RoundId == id);
+            List<Room> rooms = GetRooms(currentDirector.TournamentId);
+            List<IndividualTeam> affTeams = GetAffirmativeTeams(id);
+            List<IndividualTeam> negTeams = GetNegativeTeams(id);
+            List<Judge> judges = GetJudges(id);
+            List<Ballot> ballots = GetBallots(id);
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+
+            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affTeams,
+                NegativeTeams = negTeams,
+                Judges = judges,
+                Ballots = ballots,
+                Round = round,
+            };
+            return View(pairingVM);
+        }
+        public List<Room> GetRooms(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = _context.Room.Where(r => r.SchoolId == tournament.SchoolId).ToList();
+            return rooms;
+        }
+        public List<IndividualTeam> GetAffirmativeTeams(int id)
+        {
+            List<IndividualTeam> affTeams = new List<IndividualTeam>();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            List<Pairing> pairings = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            foreach(var pairing in pairings)
+            {
+                IndividualTeam affTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.AffirmativeTeamId);
+                affTeams.Add(affTeam);
+            }
+            return affTeams;
+        }
+        public List<IndividualTeam> GetNegativeTeams(int id)
+        {
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            List<Pairing> pairings = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            foreach (var pairing in pairings)
+            {
+                IndividualTeam negTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.NegativeTeamId);
+                negTeams.Add(negTeam);
+            }
+            return negTeams;
+        }
+        public List<Judge> GetJudges(int id)
+        {
+            List<Judge> judges = new List<Judge>();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            List<Pairing> pairings = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            foreach (var pairing in pairings)
+            {
+                Judge judge = _context.Judge.FirstOrDefault(i => i.JudgeId == pairing.JudgeId);
+                judges.Add(judge);
+            }
+            return judges;
+        }
+        public List<Ballot> GetBallots (int id)
+        {
+            List<Ballot> ballots = _context.Ballot.Where(b => b.RoundId == id).ToList();
+            return ballots;
+        }
+
+        public List<Pairing> GetRoundPairings (int id)
+        {
+            List<Pairing> roundPairings = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            return roundPairings;
         }
 
         // POST: TournamentDirectors/Create

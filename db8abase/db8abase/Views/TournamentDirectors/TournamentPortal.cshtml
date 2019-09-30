@@ -1,0 +1,22 @@
+﻿@model db8abase.Models.Round
+
+@{
+    ViewData["Title"] = "TournamentPortal";
+}
+<br />
+<br />
+<h1 style="text-align:center; text-decoration:underline">Tournament Portal</h1>
+<br />
+<br />
+<p>Click the round below in order to view more information including ballot status</p>
+<br />
+<p style="text-align:center">
+    <a asp-action="ViewIndividualRound" asp-route-id="@Model.RoundId">View Round @Model.RoundNumber</a>
+</p>
+<br />
+<br />
+<p>Click below to pair the next round</p>
+<p>
+    <a asp-action="PairNextRound" asp-route-id="@Model.RoundId">Pair Next Round</a>
+</p>
+

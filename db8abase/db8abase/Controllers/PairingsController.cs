@@ -101,6 +101,34 @@ namespace db8abase.Controllers
             }
         }
 
+        public List<IndividualTeam> FindDueNegTeams(int id)
+        {
+            var teams = GetTeams(id);
+            List<IndividualTeam> dueNegTeams = new List<IndividualTeam>();
+            foreach(var team in teams)
+            {
+                if(team.TournamentAffirmativeRounds > team.TournamentNegativeRounds)
+                {
+                    dueNegTeams.Add(team);
+                }
+            }
+            return dueNegTeams;
+        }
+
+        public List<IndividualTeam> FindDueAffTeams(int id)
+        {
+            var teams = GetTeams(id);
+            List<IndividualTeam> dueAffTeams = new List<IndividualTeam>();
+            foreach (var team in teams)
+            {
+                if (team.TournamentAffirmativeRounds < team.TournamentNegativeRounds)
+                {
+                    dueAffTeams.Add(team);
+                }
+            }
+            return dueAffTeams;
+        }
+
         public IActionResult SendRoundOnePairing(int id)
         {
             PushRoundOnePairing(id);
