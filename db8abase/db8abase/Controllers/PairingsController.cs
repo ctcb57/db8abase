@@ -234,6 +234,29 @@ namespace db8abase.Controllers
             }
             return assignedJudges;
         }
+        public List<Judge> AssignRoundTwoJudges(List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, int id)
+        {
+            List<Judge> assignedJudges = new List<Judge>();
+            List<Judge> judges = GetJudges(id);
+            for(int i = 0; i < affTeams.Count(); i++)
+            {
+                foreach(var judge in judges)
+                {
+                    if (judge.SchoolId != affTeams[i].SchoolId && judge.SchoolId != negTeams[i].SchoolId)
+                    {
+                        List<Pairing> affTeamPairings = _context.Pairing.Where(p => p.NegativeTeamId == affTeams[i].IndividualTeamId).ToList();
+                        List<Pairing> negTeamPairings = _context.Pairing.Where(p => p.AffirmativeTeamId == negTeams[i].IndividualTeamId).ToList();
+                        if(judge.JudgeId != affTeamPairings[0].JudgeId && judge.JudgeId != negTeamPairings[0].JudgeId)
+                        {
+                            assignedJudges.Add(judge);
+                            judges.Remove(judge);
+                            break;
+                        }
+                    }
+                }
+            }
+            return assignedJudges;
+        }
 
         public List<IndividualTeam> GetRoundOneNegativeTeams(int id)
         {
@@ -285,7 +308,110 @@ namespace db8abase.Controllers
         }
 
 
+        public IActionResult PairRoundTwo(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = GetRooms(id);
+            List<IndividualTeam> affTeams = GetRoundTwoAffirmativeTeams(id);
+            List<IndividualTeam> negTeams = GetRoundTwoNegativeTeams(id);
+            List<Judge> judges = AssignRoundTwoJudges(affTeams, negTeams, id);
 
+            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affTeams,
+                NegativeTeams = negTeams,
+                Judges = judges,
+            };
+            return View(pairingVM);
+        }
+
+        public List<IndividualTeam> GetRoundTwoAffirmativeTeams(int id)
+        {
+            List<IndividualTeam> roundTwoAffTeams = new List<IndividualTeam>();
+            List<Pairing> pairings = _context.Pairing.Where(p => p.TournamentId == id).ToList();
+            List<Pairing> roundOnePairings = new List<Pairing>();
+            foreach(var pairing in pairings)
+            {
+                Round roundOne = _context.Round.Where(r => r.RoundNumber == 1).Single();
+                if(pairing.RoundId == roundOne.RoundId)
+                {
+                    roundOnePairings.Add(pairing);
+                }
+            }
+            foreach(var pair in roundOnePairings)
+            {
+                IndividualTeam negTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pair.NegativeTeamId);
+                roundTwoAffTeams.Add(negTeam);
+            }
+            return roundTwoAffTeams;
+        }
+
+        public List<IndividualTeam> GetRoundTwoNegativeTeams(int id)
+        {
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            List<Pairing> pairings = _context.Pairing.Where(p => p.TournamentId == id).ToList();
+            List<Pairing> roundOnePairings = new List<Pairing>();
+            List<IndividualTeam> roundTwoAffTeams = GetRoundTwoAffirmativeTeams(id);
+            foreach (var pairing in pairings)
+            {
+                Round roundOne = _context.Round.Where(r => r.RoundNumber == 1).Single();
+                if (pairing.RoundId == roundOne.RoundId)
+                {
+                    roundOnePairings.Add(pairing);
+                }
+            }
+            foreach (var pair in roundOnePairings)
+            {
+                IndividualTeam affTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pair.AffirmativeTeamId);
+                negTeams.Add(affTeam);
+            }
+            List<IndividualTeam> roundTwoNegTeams = PairEvenRounds(roundOnePairings, roundTwoAffTeams, negTeams);
+            return roundTwoNegTeams;
+        }
+
+        public List<IndividualTeam> PairEvenRounds(List<Pairing> pairings, List<IndividualTeam> roundTwoAffTeams, List<IndividualTeam> negTeams)
+        {
+            List<IndividualTeam> roundTwoNegTeams = new List<IndividualTeam>();
+            int i = 0;
+            int j = 0;
+            while (roundTwoNegTeams.Count() < roundTwoAffTeams.Count())
+            {
+                var pairing = pairings.Where(r => r.NegativeTeamId == roundTwoAffTeams[i].IndividualTeamId).Single();
+                var random = new Random();
+                int index = random.Next(negTeams.Count);
+                var team = negTeams[index];
+                if (pairing.AffirmativeTeamId != team.IndividualTeamId)
+                {
+                    roundTwoNegTeams.Add(team);
+                    negTeams.Remove(team);
+                    i++;
+                }
+                j++;
+                if(j == 10)
+                {
+                    for(int k = 0; k < roundTwoNegTeams.Count(); k++)
+                    {
+                        roundTwoNegTeams.Remove(roundTwoNegTeams[k]);
+                    }
+                    while (roundTwoNegTeams.Count() < roundTwoAffTeams.Count())
+                    {
+                        var pairing2 = pairings.Where(r => r.NegativeTeamId == roundTwoAffTeams[i].IndividualTeamId).Single();
+                        var random2 = new Random();
+                        int index2 = random.Next(negTeams.Count);
+                        var team2 = negTeams[index];
+                        if (pairing.AffirmativeTeamId != team.IndividualTeamId)
+                        {
+                            roundTwoNegTeams.Add(team);
+                            negTeams.Remove(team);
+                            i++;
+                        }
+                    }
+                }
+            }
+            return roundTwoNegTeams;
+        }
 
         // GET: Pairings/Details/5
         public async Task<IActionResult> Details(int? id)

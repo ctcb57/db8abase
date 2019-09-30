@@ -1,4 +1,4 @@
-﻿@model db8abase.Models.Round
+﻿@model db8abase.Models.ViewModels.DirectorsTournamentPortalViewModel
 
 @{
     ViewData["Title"] = "TournamentPortal";
@@ -11,12 +11,12 @@
 <p>Click the round below in order to view more information including ballot status</p>
 <br />
 <p style="text-align:center">
-    <a asp-action="ViewIndividualRound" asp-route-id="@Model.RoundId">View Round @Model.RoundNumber</a>
+    View Round 1
 </p>
 <br />
 <br />
 <p>Click below to pair the next round</p>
 <p>
-    <a asp-action="PairNextRound" asp-route-id="@Model.RoundId">Pair Next Round</a>
+    <a asp-controller="Pairings" asp-action="PairRoundTwo" asp-route-id="@Model.Tournament.TournamentId">Pair Next Round</a>
 </p>
 
