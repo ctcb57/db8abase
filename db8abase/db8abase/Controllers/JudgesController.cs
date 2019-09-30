@@ -108,10 +108,52 @@ namespace db8abase.Controllers
                 Round = round,
                 Debate = debate,
                 Judge = judge,
-                Team = "Team",
+                Winner = "Team",
+                Loser = "Team",
                 TeamsInRound = teams,
             };
             return View(ballotVM);
+        }
+        [HttpPost]
+        public IActionResult ViewBallot(JudgesBallotViewModel data)
+        {
+            Pairing pairing = _context.Pairing.Where(p => p.JudgeId == data.Ballot.JudgeId && p.RoundId == data.Ballot.RoundId).Single();
+            IndividualTeam affTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.AffirmativeTeamId);
+            IndividualTeam negTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.NegativeTeamId);
+            //Debater firstAffSpeaker = affTeam.FirstSpeaker;
+            //Debater secondAffSpeaker = affTeam.SecondSpeaker;
+            //Debater firstNegSpeaker = negTeam.FirstSpeaker;
+            //Debater secondNegSpeaker = negTeam.SecondSpeaker;
+            Ballot ballot = data.Ballot;
+            var winnerId = int.Parse(data.Winner);
+            var loserId = int.Parse(data.Loser);
+            IndividualTeam winningTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == winnerId);
+            IndividualTeam losingTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == loserId);
+            //firstAffSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.FirstAffSpeakerPoints;
+            //secondAffSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.SecondAffSpeakerPoints;
+            //firstNegSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.FirstNegSpeakerPoints;
+            //secondNegSpeaker.IndividualTournamentSpeakerPoints = data.Ballot.SecondNegSpeakerPoints;
+            ballot.WinnerId = winnerId;
+            pairing.WinnerId = winnerId;
+            winningTeam.SingleTournamentWins++;
+            winningTeam.CumulativeAnnualWins++;
+            losingTeam.SingleTournamentLosses++;
+            losingTeam.CumulativeAnnualLosses++;
+            _context.Update(ballot);
+            _context.Update(pairing);
+            _context.Update(winningTeam);
+            _context.Update(losingTeam);
+            //_context.Update(firstAffSpeaker);
+            //_context.Update(secondAffSpeaker);
+            //_context.Update(firstNegSpeaker);
+            //_context.Update(secondNegSpeaker);
+            _context.SaveChanges();
+            return RedirectToAction("BallotSubmission", "Judges");
+        }
+
+        public IActionResult BallotSubmission()
+        {
+            return View();
         }
 
         public IEnumerable<SelectListItem> BuildTeamList(int id)
@@ -135,6 +177,7 @@ namespace db8abase.Controllers
             }
             return teamsToChoose;
         }
+
         // POST: Judges/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.

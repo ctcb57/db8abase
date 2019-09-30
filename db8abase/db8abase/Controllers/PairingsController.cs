@@ -82,6 +82,8 @@ namespace db8abase.Controllers
             List<Judge> judges = GetJudges(id);
             for(int i = 0; i < affirmativeTeams.Count(); i++)
             {
+                IndividualTeam affTeam = affirmativeTeams[i];
+                IndividualTeam negTeam = negativeTeams[i];
                 Pairing pairing = new Pairing();
                 pairing.TournamentId = id;
                 pairing.RoundId = round.RoundId;
@@ -90,7 +92,11 @@ namespace db8abase.Controllers
                 pairing.JudgeId = judges[i].JudgeId;
                 pairing.DebateId = _context.Debate.Where(d => d.JudgeId == pairing.JudgeId && d.AffirmativeTeamId == pairing.AffirmativeTeamId && d.NegativeTeamId == pairing.NegativeTeamId).Single().DebateId;
                 pairing.RoomId = _context.Debate.Where(d => d.DebateId == pairing.DebateId).Single().RoomId;
+                affTeam.TournamentAffirmativeRounds++;
+                negTeam.TournamentNegativeRounds++;
                 _context.Add(pairing);
+                _context.Update(affTeam);
+                _context.Update(negTeam);
                 _context.SaveChanges();
             }
         }

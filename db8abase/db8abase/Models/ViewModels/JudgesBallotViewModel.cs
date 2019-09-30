@@ -9,7 +9,8 @@ namespace db8abase.Models.ViewModels
     public class JudgesBallotViewModel
     {
         public Ballot Ballot { get; set; }
-        public string Team { get; set; }
+        public string Winner { get; set; }
+        public string Loser { get; set; }
 
         public IEnumerable<SelectListItem> TeamsInRound { get; set; }
 
