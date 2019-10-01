@@ -155,7 +155,7 @@ namespace db8abase.Controllers
             return View(team);
         }
         [HttpPost]
-        public IActionResult FormTeam([Bind("IndividualTeamId,FirstSpeakerId,SecondSpeakerId,SingleTournamentWins,SingleTournamentLosses,CumulativeAnnualWins,CumulativeAnnualLosses,CumulativeAnuualEliminationRoundWins,AnnualEliminationRoundAppearances,TournamentAffirmativeRounds,TournamentNegativeRounds,TocBids,CoachId,SchoolId")]IndividualTeam team)
+        public IActionResult FormTeam([Bind("IndividualTeamId,FirstSpeaker,SecondSpeaker,FirstSpeakerId,SecondSpeakerId,SingleTournamentWins,SingleTournamentLosses,SingleTournamentSpeakerPoints,CumulativeAnnualWins,CumulativeAnnualLosses,CumulativeAnuualEliminationRoundWins,AnnualEliminationRoundAppearances,TournamentAffirmativeRounds,TournamentNegativeRounds,TocBids,CoachId,SchoolId")]IndividualTeam team)
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentCoach = _context.Coach.FirstOrDefault(c => c.ApplicationUserId == currentUserId);
@@ -163,9 +163,11 @@ namespace db8abase.Controllers
             team.CoachId = currentCoach.CoachId;
             team.SchoolId = currentCoach.SchoolId;
             Debater debater1 = new Debater();
+            debater1 = team.FirstSpeaker;
             debater1.CoachId = currentCoach.CoachId;
             debater1.SchoolId = currentCoach.SchoolId;
             Debater debater2 = new Debater();
+            debater2 = team.SecondSpeaker;
             debater2.CoachId = currentCoach.CoachId;
             debater2.SchoolId = currentCoach.SchoolId;
             _context.Add(debater1);
@@ -173,13 +175,21 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             debater1.PartnerId = debater2.DebaterId;
             debater2.PartnerId = debater1.DebaterId;
-            team.FirstSpeakerId = debater1.DebaterId;
-            team.SecondSpeakerId = debater2.DebaterId;
             team.IndividualTeamName = $"{school.Name} {debater1.LastName} & {debater2.LastName}";
             _context.Update(debater1);
             _context.Update(debater2);
             _context.SaveChanges();
             _context.Add(team);
+            _context.SaveChanges();
+            team.FirstSpeakerId = debater1.DebaterId;
+            team.SecondSpeakerId = debater2.DebaterId;
+            debater1.IndividualTeamId = team.IndividualTeamId;
+            debater2.IndividualTeamId = team.IndividualTeamId;
+            debater1.SpeakerPosition = 1;
+            debater2.SpeakerPosition = 2;
+            _context.Update(team);
+            _context.Update(debater1);
+            _context.Update(debater2);
             _context.SaveChanges();
             return RedirectToAction("ManageTeam", "Coaches");
         }
@@ -192,9 +202,11 @@ namespace db8abase.Controllers
             var teams = _context.IndividualTeam.Where(d => d.SchoolId == currentCoach.SchoolId);
             foreach(var team in teams)
             {
+                var firstSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == team.IndividualTeamId && d.SpeakerPosition == 1);
+                var secondSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == team.IndividualTeamId && d.SpeakerPosition ==2);
                 items.Add(new SelectListItem
                 {
-                    Text = $"{team.FirstSpeaker.LastName} & {team.SecondSpeaker.LastName}",
+                    Text = $"{firstSpeaker.LastName} & {secondSpeaker.LastName}",
                     Value = team.IndividualTeamId.ToString()
                 });
             }

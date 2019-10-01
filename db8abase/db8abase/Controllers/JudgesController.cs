@@ -98,7 +98,7 @@ namespace db8abase.Controllers
             IndividualTeam negativeTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debate.NegativeTeamId);
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             Judge judge = _context.Judge.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            Round round = _context.Round.FirstOrDefault(r => r.RoundId == ballot.DebateId);
+            Round round = _context.Round.FirstOrDefault(r => r.RoundId == ballot.RoundId);
 
             JudgesBallotViewModel ballotVM = new JudgesBallotViewModel()
             {
@@ -120,21 +120,22 @@ namespace db8abase.Controllers
             Pairing pairing = _context.Pairing.Where(p => p.JudgeId == data.Ballot.JudgeId && p.RoundId == data.Ballot.RoundId).Single();
             IndividualTeam affTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.AffirmativeTeamId);
             IndividualTeam negTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.NegativeTeamId);
-            Debater firstAffSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == affTeam.FirstSpeakerId);
-            Debater secondAffSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == affTeam.SecondSpeakerId);
-            Debater firstNegSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == negTeam.FirstSpeakerId);
-            Debater secondNegSpeaker = _context.Debater.FirstOrDefault(d => d.DebaterId == negTeam.SecondSpeakerId);
+            Debater firstAffSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == affTeam.IndividualTeamId && d.SpeakerPosition == 1);
+            Debater secondAffSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == affTeam.IndividualTeamId && d.SpeakerPosition == 2);
+            Debater firstNegSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == negTeam.IndividualTeamId && d.SpeakerPosition == 1);
+            Debater secondNegSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == negTeam.IndividualTeamId && d.SpeakerPosition == 2);
             Ballot ballot = data.Ballot;
             var winnerId = int.Parse(data.Winner);
             var loserId = int.Parse(data.Loser);
             IndividualTeam winningTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == winnerId);
             IndividualTeam losingTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == loserId);
-            firstAffSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.FirstAffSpeakerPoints;
-            secondAffSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.SecondAffSpeakerPoints;
-            firstNegSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.FirstNegSpeakerPoints;
-            secondNegSpeaker.IndividualTournamentSpeakerPoints =+ data.Ballot.SecondNegSpeakerPoints;
-            affTeam.SingleTournamentSpeakerPoints =+ (firstAffSpeaker.IndividualTournamentSpeakerPoints + secondAffSpeaker.IndividualTournamentSpeakerPoints);
-            negTeam.SingleTournamentSpeakerPoints =+ (firstNegSpeaker.IndividualTournamentSpeakerPoints + secondNegSpeaker.IndividualTournamentSpeakerPoints);
+            firstAffSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.FirstAffSpeakerPoints;
+            secondAffSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.SecondAffSpeakerPoints;
+            firstNegSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.FirstNegSpeakerPoints;
+            secondNegSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.SecondNegSpeakerPoints;
+
+            affTeam.SingleTournamentSpeakerPoints += (firstAffSpeaker.IndividualTournamentSpeakerPoints + secondAffSpeaker.IndividualTournamentSpeakerPoints);
+            negTeam.SingleTournamentSpeakerPoints += (firstNegSpeaker.IndividualTournamentSpeakerPoints + secondNegSpeaker.IndividualTournamentSpeakerPoints);
             ballot.WinnerId = winnerId;
             pairing.WinnerId = winnerId;
             winningTeam.SingleTournamentWins++;

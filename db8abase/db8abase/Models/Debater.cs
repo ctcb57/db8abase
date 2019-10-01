@@ -24,6 +24,9 @@ namespace db8abase.Models
         public int PartnerId { get; set; }
         [ForeignKey("School Id")]
         public int SchoolId { get; set; }
+        [ForeignKey("Individual Team Id")]
+        public int IndividualTeamId { get; set; }
+        public int SpeakerPosition { get; set; }
         public double IndividualTournamentSpeakerPoints { get; set; }
         public double AnnualAverageSpeakerPoints { get; set; }
         [ForeignKey("User Id")]

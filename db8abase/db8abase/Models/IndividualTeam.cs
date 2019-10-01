@@ -17,7 +17,6 @@ namespace db8abase.Models
         public Debater FirstSpeaker { get; set; }
         [ForeignKey("Second Speaker Id")]
         public int SecondSpeakerId { get; set; }
-
         public Debater SecondSpeaker { get; set; }
 
         public int SingleTournamentWins { get; set; }
