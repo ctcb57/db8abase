@@ -206,6 +206,39 @@ namespace db8abase.Controllers
             _context.SaveChanges();
             return round;
         }
+        public Round CreateQuarterFinal(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            Round round = new Round();
+            round.RoundNumber = 5;
+            round.RoundType = "elim";
+            round.TournamentId = tournament.TournamentId;
+            _context.Add(round);
+            _context.SaveChanges();
+            return round;
+        }
+        public Round CreateSemiFinal(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            Round round = new Round();
+            round.RoundNumber = 6;
+            round.RoundType = "elim";
+            round.TournamentId = tournament.TournamentId;
+            _context.Add(round);
+            _context.SaveChanges();
+            return round;
+        }
+        public Round CreateFinal(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            Round round = new Round();
+            round.RoundNumber = 7;
+            round.RoundType = "elim";
+            round.TournamentId = tournament.TournamentId;
+            _context.Add(round);
+            _context.SaveChanges();
+            return round;
+        }
 
         public void CreateRoundOneDebate(int id)
         {
@@ -820,19 +853,22 @@ namespace db8abase.Controllers
             return finalOrder;
         }
 
-        public void DetermineNumberOfElimRounds(int id)
+        public IActionResult DetermineNumberOfElimRounds(int id)
         {
             int quarterFinalsThreshold = 16;
             int semiFinalsThreshold = 8;
             int numberOfTeams = GetTeams(id).Count();
             if (numberOfTeams > quarterFinalsThreshold)
             {
-                PairFirstOutRound(id, quarterFinalsThreshold);
+                PairingsTabulationViewModel pairingVM = PairFirstOutRound(id, quarterFinalsThreshold);
+                return View(pairingVM);
             }
             else
             {
-                PairFirstOutRound(id, semiFinalsThreshold);
+                PairingsTabulationViewModel pairingVM = PairFirstOutRound(id, semiFinalsThreshold);
+                return View(pairingVM);
             }
+            return View();
         }
 
         public List<IndividualTeam> GetPrelimFinalStandings(int id)
@@ -842,7 +878,7 @@ namespace db8abase.Controllers
             return finalStandings;
         }
 
-        public IActionResult PairFirstOutRound(int id, int outRoundThreshold)
+        public PairingsTabulationViewModel PairFirstOutRound(int id, int outRoundThreshold)
         {
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<Room> rooms = GetRooms(id);
@@ -864,6 +900,7 @@ namespace db8abase.Controllers
                 j = -1;
             }
             List<Judge> judges = AssignOutRoundJudges(affTeams, negTeams, id, outRoundThreshold);
+            PushOutRoundPairing(id, outRoundsTeams, affTeams, negTeams, judges, rooms);
 
             PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
             {
@@ -873,7 +910,52 @@ namespace db8abase.Controllers
                 NegativeTeams = negTeams,
                 Judges = judges,
             };
-            return View(pairingVM);
+            return pairingVM;
+        }
+
+        public void PushOutRoundPairing(int id, List<IndividualTeam> outRoundTeamsLeft, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, List<Room> rooms)
+        {
+            if(outRoundTeamsLeft.Count() == 8)
+            {
+                Round round = CreateQuarterFinal(id);
+                CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
+                List<Pairing> pairing = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
+                CreateRoundTwoBallots(id, pairing);
+                UpdateElimAppearances(affTeams, negTeams);
+            }
+            else if(outRoundTeamsLeft.Count() == 4)
+            {
+                Round round = CreateSemiFinal(id);
+                CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
+                List<Pairing> pairing = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
+                CreateRoundTwoBallots(id, pairing);
+                UpdateElimAppearances(affTeams, negTeams);
+            }
+            else if(outRoundTeamsLeft.Count() == 2)
+            {
+                Round round = CreateFinal(id);
+                CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
+                List<Pairing> pairing = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
+                CreateRoundTwoBallots(id, pairing);
+                UpdateElimAppearances(affTeams, negTeams);
+            }
+        }
+
+        public void UpdateElimAppearances(List<IndividualTeam> affTeams, List<IndividualTeam> negTeams)
+        {
+            foreach(var team in affTeams)
+            {
+                team.AnnualEliminationRoundAppearances++;
+                _context.Update(team);
+                _context.SaveChanges();
+            }
+            foreach (var team in negTeams)
+            {
+                team.AnnualEliminationRoundAppearances++;
+                _context.Update(team);
+                _context.SaveChanges();
+            }
+
         }
 
         public List<Judge> AssignOutRoundJudges(List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, int id, int outroundTeams)
