@@ -419,6 +419,8 @@ namespace db8abase.Controllers
             return assignedJudges;
         }
 
+        
+
         public List<IndividualTeam> SortTeamsByRecord(int id)
         {
             List<IndividualTeam> tournamentTeams = GetTeams(id);
@@ -696,9 +698,66 @@ namespace db8abase.Controllers
             {
                 negTeams.Add(orderedTeams[j]);
             }
-            List<Judge> judges = AssignRoundThreeJudges(affTeams, negTeams, id);
-            return View(affTeams);
+            List<Judge> judges = AssignRoundFourJudges(affTeams, negTeams, id);
+            PushRoundFourPairing(id, affTeams, negTeams, judges, rooms);
+
+            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affTeams,
+                NegativeTeams = negTeams,
+                Judges = judges,
+            };
+            return View(pairingVM);
         }
+        public void PushRoundFourPairing(int id, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, List<Room> rooms)
+        {
+            Round round = CreateRoundFour(id);
+            CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
+            List<Pairing> pairings = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
+            CreateRoundTwoBallots(id, pairings);
+        }
+        public List<Judge> AssignRoundFourJudges(List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, int id)
+        {
+            List<Judge> assignedJudges = new List<Judge>();
+            List<Judge> judges = GetJudges(id);
+            for(int i = 0; i < affTeams.Count(); i++)
+            {
+                List<Pairing> affPairings = _context.Pairing.Where(p => p.AffirmativeTeamId == affTeams[i].IndividualTeamId || p.NegativeTeamId == affTeams[i].IndividualTeamId).ToList();
+                List<Pairing> negPairings = _context.Pairing.Where(p => p.AffirmativeTeamId == negTeams[i].IndividualTeamId || p.NegativeTeamId == negTeams[i].IndividualTeamId).ToList();
+                var count = 0; 
+                for (int j = 0; j < judges.Count(); j++)
+                {
+                    count++;
+                    if (judges[j].SchoolId != affTeams[i].SchoolId || judges[j].SchoolId != negTeams[j].SchoolId)
+                    {
+                        for(int k = 0; k < affPairings.Count(); k++)
+                        {
+                            if(judges[j].JudgeId == affPairings[k].JudgeId || judges[j].JudgeId == negPairings[k].JudgeId)
+                            {
+                                break;
+                            }
+                            else if(k == (affPairings.Count() - 1))
+                            {
+                                assignedJudges.Add(judges[j]);
+                                judges.Remove(judges[j]);
+                                j = 0;
+                                count = 0;
+                                break;
+                            }
+                        }
+                    }
+                    if (j == 0 && count == 0)
+                    {
+                        break;
+                    }
+                }
+                
+            }
+            return assignedJudges;
+        }
+        
 
         public List<IndividualTeam> SortRoundFourNegTeams(int id)
         {
@@ -743,13 +802,11 @@ namespace db8abase.Controllers
                             count = 0;
                             break;
                         }
-                        
                     }
                     if (j == 0 && count == 0)
                     {
                         break;
                     }
-                    
                 }
             }
             foreach(var team in affTeams)
@@ -762,9 +819,6 @@ namespace db8abase.Controllers
             }
             return finalOrder;
         }
-
-
-
 
         // GET: Pairings/Details/5
         public async Task<IActionResult> Details(int? id)
