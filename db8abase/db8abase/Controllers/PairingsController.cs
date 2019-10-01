@@ -347,13 +347,13 @@ namespace db8abase.Controllers
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<Room> rooms = GetRooms(id);
             List<IndividualTeam> sortedTeams = SortTeamsByRecord(id);
-            List<IndividualTeam> finalOrder = RoundThreeAffirmativeTeams(sortedTeams, id);
+            List<IndividualTeam> finalOrder = SortRoundThreeTeams(sortedTeams, id);
             List<IndividualTeam> affirmativeTeams = new List<IndividualTeam>();
             List<IndividualTeam> negativeTeams = new List<IndividualTeam>();
             if (sortedTeams.Count() != 0)
             {
                 List<IndividualTeam> sortedAgain = SortTeamsByRecord(id);
-                List<IndividualTeam> teamOrder = RoundThreeAffirmativeTeams(sortedAgain, id);
+                List<IndividualTeam> teamOrder = SortRoundThreeTeams(sortedAgain, id);
                 for (int i = 0; i < finalOrder.Count() / 2; i++)
                 {
                     affirmativeTeams.Add(finalOrder[i]);
@@ -375,7 +375,25 @@ namespace db8abase.Controllers
                 }
             }
             List<Judge> judges = AssignRoundThreeJudges(affirmativeTeams, negativeTeams, id);
-            return View(finalOrder);
+            PushRoundThreePairing(id, affirmativeTeams, negativeTeams, judges, rooms);
+
+            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affirmativeTeams,
+                NegativeTeams = negativeTeams,
+                Judges = judges,
+            };
+            return View(pairingVM);
+        }
+
+        public void PushRoundThreePairing(int id, List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, List<Judge> judges, List<Room> rooms)
+        {
+            Round round = CreateRoundThree(id);
+            CreateRoundTwoDebate(id, affTeams, negTeams, judges, rooms);
+            List<Pairing> pairings = CreateRoundTwoPairing(id, affTeams, negTeams, judges, round);
+            CreateRoundTwoBallots(id, pairings);
         }
         public List<Judge> AssignRoundThreeJudges(List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, int id)
         {
@@ -431,7 +449,7 @@ namespace db8abase.Controllers
             return teamsSortedByWins;
         }
 
-        public List<IndividualTeam> RoundThreeAffirmativeTeams(List<IndividualTeam> sortedTeams, int id)
+        public List<IndividualTeam> SortRoundThreeTeams(List<IndividualTeam> sortedTeams, int id)
         {
             List<IndividualTeam> teams = sortedTeams;
             List<IndividualTeam> affTeams = new List<IndividualTeam>();
@@ -476,42 +494,7 @@ namespace db8abase.Controllers
             }
             return finalOrder;
         }
-        public List<IndividualTeam> RoundThreeNegativeTeams(List<IndividualTeam> sortedTeams, int id)
-        {
-            List<IndividualTeam> teams = sortedTeams;
-            List<IndividualTeam> affTeams = new List<IndividualTeam>();
-            List<IndividualTeam> negTeams = new List<IndividualTeam>();
-            List<Pairing> tournamentPairings = _context.Pairing.Where(t => t.TournamentId == id).ToList();
-            for (int i = 0; i < teams.Count(); i++)
-            {
-                var pairings = tournamentPairings.Where(t => t.AffirmativeTeamId == teams[i].IndividualTeamId || t.NegativeTeamId == teams[i].IndividualTeamId).ToList();
-                for (int j = i + 1; j < teams.Count(); j++)
-                {
-                    for (int k = 0; k < pairings.Count(); k++)
-                    {
-                        if (pairings[k].AffirmativeTeamId == teams[j].IndividualTeamId || pairings[k].NegativeTeamId == teams[j].IndividualTeamId)
-                        {
-                            break;
-                        }
-                        else if ((pairings.Count() - 1) == k)
-                        {
-                            affTeams.Add(teams[i]);
-                            negTeams.Add(teams[j]);
-                            teams.Remove(teams[i]);
-                            teams.Remove(teams[j - 1]);
-                            j = 0;
-                            break;
-                        }
-                    }
-                    if (j == 0)
-                    {
-                        break;
-                    }
-                }
-                i = -1;
-            }
-            return negTeams;
-        }
+
 
         public List<IndividualTeam> SortBySpeaks(List<IndividualTeam> teams)
         {
