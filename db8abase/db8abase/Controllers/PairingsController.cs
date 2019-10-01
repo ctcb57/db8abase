@@ -820,6 +820,134 @@ namespace db8abase.Controllers
             return finalOrder;
         }
 
+        public void DetermineNumberOfElimRounds(int id)
+        {
+            int quarterFinalsThreshold = 16;
+            int semiFinalsThreshold = 8;
+            int numberOfTeams = GetTeams(id).Count();
+            if (numberOfTeams > quarterFinalsThreshold)
+            {
+                PairFirstOutRound(id, quarterFinalsThreshold);
+            }
+            else
+            {
+                PairFirstOutRound(id, semiFinalsThreshold);
+            }
+        }
+
+        public List<IndividualTeam> GetPrelimFinalStandings(int id)
+        {
+            List<IndividualTeam> teams = GetTeams(id);
+            List<IndividualTeam> finalStandings = teams.OrderByDescending(t => t.SingleTournamentWins).ThenByDescending(t => t.SingleTournamentSpeakerPoints).ToList();
+            return finalStandings;
+        }
+
+        public IActionResult PairFirstOutRound(int id, int outRoundThreshold)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = GetRooms(id);
+            List<IndividualTeam> finalStandings = GetPrelimFinalStandings(id);
+            List<IndividualTeam> outRoundsTeams = new List<IndividualTeam>();
+            for(int i = 0; i < outRoundThreshold / 2; i++)
+            {
+                outRoundsTeams.Add(finalStandings[i]);
+            }
+            List<IndividualTeam> seedingOrder = SeedOutrounds(outRoundsTeams);
+            List<IndividualTeam> affTeams = new List<IndividualTeam>();
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            for(int j = 0; j < seedingOrder.Count(); j++)
+            {
+                affTeams.Add(seedingOrder[j]);
+                negTeams.Add(seedingOrder[j + 1]);
+                seedingOrder.Remove(seedingOrder[j]);
+                seedingOrder.Remove(seedingOrder[j]);
+                j = -1;
+            }
+            List<Judge> judges = AssignOutRoundJudges(affTeams, negTeams, id, outRoundThreshold);
+
+            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affTeams,
+                NegativeTeams = negTeams,
+                Judges = judges,
+            };
+            return View(pairingVM);
+        }
+
+        public List<Judge> AssignOutRoundJudges(List<IndividualTeam> affTeams, List<IndividualTeam> negTeams, int id, int outroundTeams)
+        {
+            List<Judge> allJudges = GetJudges(id);
+            List<Judge> judges = new List<Judge>();
+            for(int i = 0; i < affTeams.Count(); i++)
+            {
+                if(judges.Count() == outroundTeams / 2)
+                {
+                    break;
+                }
+                for (int j = 0; j < allJudges.Count(); j++)
+                {
+                    if(allJudges[j].SchoolId != affTeams[i].SchoolId && allJudges[j].SchoolId != negTeams[i].SchoolId)
+                    {
+                        judges.Add(allJudges[j]);
+                        allJudges.Remove(allJudges[j]);
+                        break;
+                    }
+                }
+            }
+            return judges;
+        }
+
+        public List<IndividualTeam> SeedOutrounds(List<IndividualTeam> outRoundsTeams)
+        {
+            List<IndividualTeam> highSeeds = new List<IndividualTeam>();
+            List<IndividualTeam> lowSeeds = new List<IndividualTeam>();
+            List<IndividualTeam> affTeams = new List<IndividualTeam>();
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            List<IndividualTeam> seedingOrder = new List<IndividualTeam>();
+            for(int i = 0; i < outRoundsTeams.Count()/2; i++)
+            {
+                highSeeds.Add(outRoundsTeams[i]);
+            }
+            for(int j = outRoundsTeams.Count() - 1; j >= outRoundsTeams.Count()/2; j--)
+            {
+                lowSeeds.Add(outRoundsTeams[j]);
+            }
+            for(int k = 0; k < highSeeds.Count(); k++)
+            {
+                var affPairings = _context.Pairing.Where(p => p.AffirmativeTeamId == highSeeds[k].IndividualTeamId || p.NegativeTeamId == highSeeds[k].IndividualTeamId).ToList();
+                for(int m = 0; m < affPairings.Count(); m++)
+                {
+                    if (affPairings[m].AffirmativeTeamId == lowSeeds[k].IndividualTeamId)
+                    {
+                        negTeams.Add(lowSeeds[k]);
+                        affTeams.Add(highSeeds[k]);
+                        break;
+                    }
+                    else if(affPairings[m].NegativeTeamId == lowSeeds[k].IndividualTeamId)
+                    {
+                        affTeams.Add(lowSeeds[k]);
+                        negTeams.Add(highSeeds[k]);
+                        break;
+                    }
+                    else if(m == (affPairings.Count() - 1))
+                    {
+                        affTeams.Add(highSeeds[k]);
+                        negTeams.Add(lowSeeds[k]);
+                        break;
+                    }
+                }
+            }
+            for(int l = 0; l < affTeams.Count(); l++)
+            {
+                seedingOrder.Add(affTeams[l]);
+                seedingOrder.Add(negTeams[l]);
+            }
+            return seedingOrder;
+        }
+       
+        //public IActionResult PairSemiFinals()
         // GET: Pairings/Details/5
         public async Task<IActionResult> Details(int? id)
         {
