@@ -73,7 +73,7 @@ namespace db8abase.Controllers
                             teams.Add(teamsFromSchool[i]);
                             break;
                         }
-                        else if (j < (currentEntries.Count() - 1))
+                        else if (j == (currentEntries.Count() - 1))
                         {
                             teams.Add(teamsFromSchool[i]);
                             break;
@@ -122,7 +122,7 @@ namespace db8abase.Controllers
                             judges.Add(teamJudges[i]);
                             break;
                         }
-                        else if (j < (currentEntries.Count() - 1))
+                        else if (j == (currentEntries.Count() - 1))
                         {
                             judges.Add(teamJudges[i]);
                             break;
@@ -148,9 +148,12 @@ namespace db8abase.Controllers
             JudgeEntry judgeEntry = new JudgeEntry();
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             var judges = BuildJudgesList(id);
-            judgeEntry.TournamentId = tournament.TournamentId;
-            _context.Add(judgeEntry);
-            _context.SaveChanges();
+            if (judges.Count() > 0)
+            {
+                judgeEntry.TournamentId = tournament.TournamentId;
+                _context.Add(judgeEntry);
+                _context.SaveChanges();
+            }
 
             CoachesEnterJudgesViewModel coachesEnterJudgesViewModel = new CoachesEnterJudgesViewModel()
             {
@@ -167,7 +170,7 @@ namespace db8abase.Controllers
             var judgeId = int.Parse(data.Judge);
             JudgeEntry judgeEntry = _context.JudgeEntry.Where(t => t.JudgeEntryId == data.JudgeEntry.JudgeEntryId).Single();
             judgeEntry.JudgeId = judgeId;
-            _context.Attach(judgeEntry);
+            _context.Update(judgeEntry);
             _context.SaveChanges();
             return RedirectToAction("TournamentManagement", "Coaches");
         }
@@ -178,9 +181,12 @@ namespace db8abase.Controllers
             TeamEntry teamEntry = new TeamEntry();
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             var teams = BuildTeamList(id);
-            teamEntry.TournamentId = tournament.TournamentId;
-            _context.Add(teamEntry);
-            _context.SaveChanges();
+            if(teams.Count() > 0)
+            {
+                teamEntry.TournamentId = tournament.TournamentId;
+                _context.Add(teamEntry);
+                _context.SaveChanges();
+            }
 
             CoachesEnterTeamsViewModel coachesEnterTeamsViewModel = new CoachesEnterTeamsViewModel()
             {
@@ -197,13 +203,13 @@ namespace db8abase.Controllers
             var teamId = int.Parse(data.Team);
             TeamEntry teamEntry = _context.TeamEntry.Where(t => t.EntryId == data.TeamEntry.EntryId).Single();
             teamEntry.IndividualTeamId = teamId;
-            _context.Attach(teamEntry);
+            _context.Update(teamEntry);
             _context.SaveChanges();
             var tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == teamEntry.TournamentId);
             var enteredTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == teamId);
             var teamCoach = _context.Coach.FirstOrDefault(c => c.CoachId == enteredTeam.CoachId);
             teamCoach.Balance = tournament.EntryFee;
-            _context.Attach(teamCoach);
+            _context.Update(teamCoach);
             _context.SaveChanges();
             return RedirectToAction("TournamentManagement", "Coaches");
         }
