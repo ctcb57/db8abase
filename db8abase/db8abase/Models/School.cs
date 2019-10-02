@@ -20,8 +20,5 @@ namespace db8abase.Models
         public int TournamentDirectorId { get; set; }
         [ForeignKey("Coach Id")]
         public int CoachId { get; set; }
-        [NotMapped]
-        public List<Room> Rooms { get; set; }
-
     }
 }

@@ -874,15 +874,75 @@ namespace db8abase.Controllers
         public IActionResult PairSecondElimRound(int id)
         {
             var semiFinalsThreshold = 8;
-            var finalsThreshold = 4;
             int teamEntries = GetTeams(id).Count();
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = GetRooms(id);
+            List<IndividualTeam> affTeams = new List<IndividualTeam>();
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            List<IndividualTeam> judges = new List<IndividualTeam>();
             if(teamEntries / 2 > semiFinalsThreshold)
             {
-                //PairSems
+                Round previousRound = _context.Round.Where(r => r.TournamentId == id && r.RoundNumber == 5).Single();
+                List<Pairing> previousPairings = _context.Pairing.Where(p => p.RoundId == previousRound.RoundId).ToList();
+                List<IndividualTeam> quartersWinners = new List<IndividualTeam>();
+                foreach (var pairing in previousPairings)
+                {
+                    IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.WinnerId);
+                    quartersWinners.Add(team);
+                }
+                List<IndividualTeam> sortedTeams = PairSemifinals(id);
+                for(int i = 0; i < sortedTeams.Count(); i++)
+                {
+                    affTeams.Add(sortedTeams[i]);
+                    negTeams.Add(sortedTeams[i + 1]);
+                    sortedTeams.Remove(sortedTeams[i]);
+                    sortedTeams.Remove(sortedTeams[i]);
+                    i = -1;
+                }
+                List<Judge> semisJudges = AssignOutRoundJudges(affTeams, negTeams, id, semiFinalsThreshold);
+                PushOutRoundPairing(id, quartersWinners, affTeams, negTeams, semisJudges, rooms);
+
+                PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+                {
+                    Tournament = tournament,
+                    Rooms = rooms,
+                    AffirmativeTeams = affTeams,
+                    NegativeTeams = negTeams,
+                    Judges = semisJudges,
+                };
+                return View(pairingVM);
             }
             else
             {
-                //PairFinals
+                Round previousRound = _context.Round.Where(r => r.TournamentId == id && r.RoundNumber == 6).Single();
+                List<Pairing> previousPairings = _context.Pairing.Where(p => p.RoundId == previousRound.RoundId).ToList();
+                List<IndividualTeam> semisWinners = new List<IndividualTeam>();
+                foreach (var pairing in previousPairings)
+                {
+                    IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.WinnerId);
+                    semisWinners.Add(team);
+                }
+                List<IndividualTeam> sortedTeams = PairFinals(id);
+                for (int i = 0; i < sortedTeams.Count(); i++)
+                {
+                    affTeams.Add(sortedTeams[i]);
+                    negTeams.Add(sortedTeams[i + 1]);
+                    sortedTeams.Remove(sortedTeams[i]);
+                    sortedTeams.Remove(sortedTeams[i]);
+                    i = -1;
+                }
+                List<Judge> finalsJudges = AssignOutRoundJudges(affTeams, negTeams, id, semiFinalsThreshold);
+                PushOutRoundPairing(id, semisWinners, affTeams, negTeams, finalsJudges, rooms);
+
+                PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+                {
+                    Tournament = tournament,
+                    Rooms = rooms,
+                    AffirmativeTeams = affTeams,
+                    NegativeTeams = negTeams,
+                    Judges = finalsJudges,
+                };
+                return View(pairingVM);
             }
         }
 

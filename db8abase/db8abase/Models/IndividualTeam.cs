@@ -34,10 +34,6 @@ namespace db8abase.Models
         public int CoachId { get; set; }
         [ForeignKey("School Id")]
         public int SchoolId { get; set; }
-        [NotMapped]
-        public List<IndividualTeam> TeamsFacedAtTournament { get; set; }
-        [NotMapped]
-        public List<Judge> JudgesSeenAtTournament { get; set; }
 
     }
 }

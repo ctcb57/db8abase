@@ -25,11 +25,5 @@ namespace db8abase.Models
         [Display(Name = "Team Limit")]
         public int TeamLimit { get; set; }
         public string FilePath { get; set; }
-        [NotMapped]
-        public List<Round> Rounds { get; set; }
-        [NotMapped]
-        public List<IndividualTeam> EnteredTeams { get; set; }
-        [NotMapped]
-        public List<Judge> Judges { get; set; }
     }
 }
