@@ -45,12 +45,43 @@ namespace db8abase.Controllers
             return View(tournamentListing);
         }
 
-        public IEnumerable<SelectListItem> BuildTeamList()
+        public IEnumerable<SelectListItem> BuildTeamList(int id)
         {
             List<SelectListItem> teamList = new List<SelectListItem>();
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            var teams = _context.IndividualTeam.Where(t => t.SchoolId == currentCoach.SchoolId).ToList();
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<IndividualTeam> teams = new List<IndividualTeam>();
+            var currentEntries = _context.TeamEntry.Where(t => t.TournamentId == id).ToList();
+            var teamsFromSchool = _context.IndividualTeam.Where(t => t.SchoolId == currentCoach.SchoolId).ToList();
+            for(int i = 0; i < teamsFromSchool.Count(); i++)
+            {
+                if (currentEntries.Count() == 0)
+                {
+                    teams.Add(teamsFromSchool[i]);
+                }
+                else
+                {
+                    for (int j = 0; j < currentEntries.Count(); j++)
+                    {
+                        if (teamsFromSchool[i].IndividualTeamId == currentEntries[j].IndividualTeamId)
+                        {
+                            break;
+                        }
+                        else if(currentEntries.Count() == 1)
+                        {
+                            teams.Add(teamsFromSchool[i]);
+                            break;
+                        }
+                        else if (j < (currentEntries.Count() - 1))
+                        {
+                            teams.Add(teamsFromSchool[i]);
+                            break;
+                        }
+                    }
+                }
+            }
+
             foreach(var team in teams)
             {
                 teamList.Add(
@@ -63,12 +94,42 @@ namespace db8abase.Controllers
             return teamList;
         }
 
-        public IEnumerable<SelectListItem> BuildJudgesList()
+        public IEnumerable<SelectListItem> BuildJudgesList(int id)
         {
             List<SelectListItem> judgeList = new List<SelectListItem>();
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
-            var judges = _context.Judge.Where(j => j.SchoolId == currentCoach.SchoolId).ToList();
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Judge> judges = new List<Judge>();
+            var currentEntries = _context.JudgeEntry.Where(t => t.TournamentId == id).ToList();
+            var teamJudges = _context.Judge.Where(j => j.SchoolId == currentCoach.SchoolId).ToList();
+            for (int i = 0; i < teamJudges.Count(); i++)
+            {
+                if (currentEntries.Count() == 0)
+                {
+                    judges.Add(teamJudges[i]);
+                }
+                else
+                {
+                    for (int j = 0; j < currentEntries.Count(); j++)
+                    {
+                        if (teamJudges[i].JudgeId == currentEntries[j].JudgeId)
+                        {
+                            break;
+                        }
+                        else if (currentEntries.Count() == 1)
+                        {
+                            judges.Add(teamJudges[i]);
+                            break;
+                        }
+                        else if (j < (currentEntries.Count() - 1))
+                        {
+                            judges.Add(teamJudges[i]);
+                            break;
+                        }
+                    }
+                }
+            }
             foreach (var judge in judges)
             {
                 judgeList.Add(
@@ -86,7 +147,7 @@ namespace db8abase.Controllers
         {
             JudgeEntry judgeEntry = new JudgeEntry();
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
-            var judges = BuildJudgesList();
+            var judges = BuildJudgesList(id);
             judgeEntry.TournamentId = tournament.TournamentId;
             _context.Add(judgeEntry);
             _context.SaveChanges();
@@ -116,7 +177,7 @@ namespace db8abase.Controllers
         {
             TeamEntry teamEntry = new TeamEntry();
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
-            var teams = BuildTeamList();
+            var teams = BuildTeamList(id);
             teamEntry.TournamentId = tournament.TournamentId;
             _context.Add(teamEntry);
             _context.SaveChanges();
