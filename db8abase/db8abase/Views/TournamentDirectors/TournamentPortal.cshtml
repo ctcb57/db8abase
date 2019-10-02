@@ -10,13 +10,85 @@
 <br />
 <p>Click the round below in order to view more information including ballot status</p>
 <br />
-<p style="text-align:center">
-    View Round 1
-</p>
+<table class="table table-hover">
+    <thead>
+        <tr class="table-primary">
+            <th style="text-align:center; text-decoration:underline">
+                Round Type
+            </th>
+            <th>
+                Round Number
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @for (int i = 0; i < Model.Rounds.Count(); i++)
+        {
+            <tr class="table-secondary">
+                <th scope="row">
+                    @Html.DisplayFor(model => model.Rounds[i].RoundType)
+                </th>
+                <th scope="row">
+                    @Html.DisplayFor(model => model.Rounds[i].RoundNumber)
+                </th>
+                <td>
+                    <a asp-controller="Pairings" asp-action="ViewRoundDetails" asp-route-id="@Model.Rounds[i].RoundId" style="color:#087485">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 <br />
 <br />
-<p>Click below to pair the next round</p>
+<p>If rounds are not present, click the link below to pair the first round</p>
+<P>Otherwise, click the link to pair the next round</P>
+@if (Model.Round == null || Model.Round == null)
+{
+    <p>
+        <a asp-controller="Pairings" asp-action="PairRoundOne" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Pair Round One</a>
+    </p>
+}
+else if (Model.Round.RoundNumber == 1)
+{
+    <p>
+        <a asp-controller="Pairings" asp-action="PairRoundTwo" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Pair Round Two</a>
+    </p>
+}
+else if (Model.Round.RoundNumber == 2)
+{
 <p>
-    <a asp-controller="Pairings" asp-action="PairSecondElimRound" asp-route-id="@Model.Tournament.TournamentId">Pair Next Round</a>
+    <a asp-controller="Pairings" asp-action="PairRoundThree" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Pair Round Three</a>
 </p>
+}
+else if (Model.Round.RoundNumber == 3)
+{
+    <p>
+        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+    </p>
+}
+else if (Model.Round.RoundNumber == 4)
+{
+    <p>
+        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+    </p>
+}
+else if (Model.Round.RoundNumber == 5)
+{
+    <p>
+        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+    </p>
+}
+else if (Model.Round.RoundNumber == 6)
+{
+    <p>
+        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+    </p>
+}
+else
+{
+    <p>
+        <a asp-controller="Pairings" asp-action="PairRoundOne" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Send Pairings</a>
+    </p>
+}
 

@@ -89,12 +89,24 @@ namespace db8abase.Controllers
             var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
             Pairing pairing = _context.Pairing.FirstOrDefault(p => p.TournamentId == tournament.TournamentId);
-            List<Round> rounds = _context.Round.Where(r => r.RoundNumber == 1).ToList();
+            List<Round> rounds = _context.Round.Where(t => t.TournamentId == tournament.TournamentId).ToList();
+            List<Round> roundsInOrder = rounds.OrderByDescending(r => r.RoundNumber).ToList();
+            Round round = new Round();
+            if(rounds.Count() == 0)
+            {
+                round = null;
+            }
+            else
+            {
+                round = roundsInOrder[0];
+            }
+
 
             DirectorsTournamentPortalViewModel portalVM = new DirectorsTournamentPortalViewModel()
             {
                 Tournament = tournament,
                 Rounds = rounds,
+                Round = round,
             };
             return View(portalVM);
         }

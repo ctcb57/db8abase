@@ -9,5 +9,6 @@ namespace db8abase.Models.ViewModels
     {
         public List<Round> Rounds { get; set; }
         public Tournament Tournament { get; set; }
+        public Round Round { get; set; }
     }
 }

@@ -1,10 +1,10 @@
 ﻿@model db8abase.Models.ViewModels.PairingsTabulationViewModel
 @{
-    ViewData["Title"] = "PairRoundTwo";
+    ViewData["Title"] = "ViewRoundDetails";
 }
 <br />
 <br />
-<h1 style="text-align:center; text-decoration:underline">Round 2 Pairing</h1>
+<h1 style="text-align:center; text-decoration:underline">Round Details</h1>
 <h4 style="text-align:center">@Html.DisplayFor(model => model.Tournament.Name)</h4>
 <br />
 <br />
@@ -24,7 +24,7 @@
                 Judge
             </th>
             <th>
-                Philosophy
+                Ballot Status
             </th>
         </tr>
     </thead>
@@ -45,14 +45,14 @@
                     @Html.DisplayFor(model => model.Judges[i].LastName), @Html.DisplayFor(model => model.Judges[i].FirstName)
                 </td>
                 <td>
-                    <a asp-controller="Home" asp-action="ViewPhilosophy" asp-route-id="@Model.Judges[i].JudgeId" style="color:#087485">Philosophy</a>
+                    @Html.DisplayFor(model => model.Ballots[i].BallotTurnedIn)
                 </td>
             </tr>
         }
     </tbody>
 </table>
-<p>Second round pairings have been successfully sent with the above information.  Click below to return to Tournament Portal</p>
+<p>Click below to return to the tournament portal</p>
 <p>
     <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Back To Portal</a>
 </p>
-</p>
+

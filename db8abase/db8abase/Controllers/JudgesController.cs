@@ -125,6 +125,7 @@ namespace db8abase.Controllers
             Debater firstNegSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == negTeam.IndividualTeamId && d.SpeakerPosition == 1);
             Debater secondNegSpeaker = _context.Debater.FirstOrDefault(d => d.IndividualTeamId == negTeam.IndividualTeamId && d.SpeakerPosition == 2);
             Ballot ballot = data.Ballot;
+            Round round = _context.Round.Where(r => r.RoundId == ballot.RoundId).Single();
             var winnerId = int.Parse(data.Winner);
             var loserId = int.Parse(data.Loser);
             IndividualTeam winningTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == winnerId);
@@ -138,7 +139,10 @@ namespace db8abase.Controllers
             ballot.WinnerId = winnerId;
             pairing.WinnerId = winnerId;
             winningTeam.SingleTournamentWins++;
-            winningTeam.CumulativeAnnualElminationRoundWins++;
+            if(round.RoundNumber > 4)
+            {
+                winningTeam.CumulativeAnnualElminationRoundWins++;
+            }
             winningTeam.CumulativeAnnualWins++;
             losingTeam.SingleTournamentLosses++;
             losingTeam.CumulativeAnnualLosses++;

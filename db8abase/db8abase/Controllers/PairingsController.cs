@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
 using db8abase.Models.ViewModels;
+using System.Security.Claims;
 
 namespace db8abase.Controllers
 {
@@ -33,7 +34,67 @@ namespace db8abase.Controllers
             return View(tournament);
         }
 
-        
+        public IActionResult ViewRoundDetails(int id)
+        {
+            List<Ballot> ballots = GetBallots(id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentDirector = _context.TournamentDirector.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == currentDirector.TournamentId);
+            List<Room> rooms = GetRooms(currentDirector.TournamentId);
+            List<IndividualTeam> affirmativeTeams = GetRoundAffTeams(id);
+            List<IndividualTeam> negativeTeams = GetRoundNegTeams(id);
+            List<Judge> judges = GetRoundJudges(id);
+
+            PairingsTabulationViewModel viewModelData = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affirmativeTeams,
+                NegativeTeams = negativeTeams,
+                Judges = judges,
+                Ballots = ballots,
+            };
+            return View(viewModelData);
+        }
+        public List<IndividualTeam> GetRoundAffTeams(int id)
+        {
+            List<Pairing> roundPairing = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            List<IndividualTeam> roundAffTeams = new List<IndividualTeam>();
+            for(int i = 0; i < roundPairing.Count(); i++)
+            {
+                IndividualTeam team = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == roundPairing[i].AffirmativeTeamId);
+                roundAffTeams.Add(team);
+            }
+            return roundAffTeams;
+        }
+        public List<IndividualTeam> GetRoundNegTeams(int id)
+        {
+            List<Pairing> roundPairing = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            List<IndividualTeam> roundNegTeams = new List<IndividualTeam>();
+            for (int i = 0; i < roundPairing.Count(); i++)
+            {
+                IndividualTeam team = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == roundPairing[i].NegativeTeamId);
+                roundNegTeams.Add(team);
+            }
+            return roundNegTeams;
+        }
+        public List<Judge> GetRoundJudges(int id)
+        {
+            List<Pairing> roundPairing = _context.Pairing.Where(p => p.RoundId == id).ToList();
+            List<Judge> judges = new List<Judge>();
+            for (int i = 0; i < roundPairing.Count(); i++)
+            {
+                Judge judge = _context.Judge.FirstOrDefault(t => t.JudgeId == roundPairing[i].JudgeId);
+                judges.Add(judge);
+            }
+            return judges;
+        }
+
+        public List<Ballot> GetBallots(int id)
+        {
+            List<Ballot> ballots = _context.Ballot.Where(b => b.RoundId == id).ToList();
+            return ballots;
+        }
         // GET: PairRoundOne
         public IActionResult PairRoundOne(int id)
         {
@@ -79,7 +140,7 @@ namespace db8abase.Controllers
             CreateRoundOneDebate(id);
             List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
             List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
-            List<Judge> judges = GetJudges(id);
+            List<Judge> judges = AssignRoundOneJudges(id);
             for(int i = 0; i < affirmativeTeams.Count(); i++)
             {
                 IndividualTeam affTeam = affirmativeTeams[i];
@@ -142,7 +203,7 @@ namespace db8abase.Controllers
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
             List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
-            List<Judge> judges = GetJudges(id);
+            List<Judge> judges = AssignRoundOneJudges(id);
             List<Pairing> pairings = new List<Pairing>();
             for(int i = 0; i < affirmativeTeams.Count(); i++)
             {
@@ -243,7 +304,7 @@ namespace db8abase.Controllers
         public void CreateRoundOneDebate(int id)
         {
             List<Room> rooms = GetRooms(id);
-            List<Judge> judges = GetJudges(id);
+            List<Judge> judges = AssignRoundOneJudges(id);
             List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
             List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
             for(int i = 0; i < affirmativeTeams.Count(); i++)
@@ -330,11 +391,24 @@ namespace db8abase.Controllers
         public List<IndividualTeam> GetRoundOneNegativeTeams(int id)
         {
             List<IndividualTeam> negativeTeams = new List<IndividualTeam>();
+            List<IndividualTeam> affirmativeTeams = GetRoundOneAffirmativeTeams(id);
+            List<IndividualTeam> dueNegTeams = new List<IndividualTeam>();
             List<IndividualTeam> enteredTeams = GetTeams(id);
-            int teamCount = enteredTeams.Count();
-            for(int i = teamCount; i > teamCount / 2; i--)
+            for (int i = enteredTeams.Count() - 1; i >= enteredTeams.Count() / 2; i--)
             {
-                negativeTeams.Add(enteredTeams[i - 1]);
+                dueNegTeams.Add(enteredTeams[i]);
+            }
+            for(int j = 0; j < affirmativeTeams.Count(); j++)
+            {
+                for(int k = 0; k < dueNegTeams.Count(); k++)
+                {
+                    if(affirmativeTeams[j].SchoolId != dueNegTeams[k].SchoolId)
+                    {
+                        negativeTeams.Add(dueNegTeams[k]);
+                        dueNegTeams.Remove(dueNegTeams[k]);
+                        break;
+                    }
+                }
             }
             return negativeTeams;
         }
@@ -457,6 +531,8 @@ namespace db8abase.Controllers
         public List<IndividualTeam> SortTeamsByRecord(int id)
         {
             List<IndividualTeam> tournamentTeams = GetTeams(id);
+
+            List<IndividualTeam> sort = tournamentTeams.OrderByDescending(t => t.SingleTournamentWins).ThenByDescending(t => t.SingleTournamentSpeakerPoints).ToList();
             List<IndividualTeam> teamsSortedByWins = new List<IndividualTeam>();
             List<IndividualTeam> twoWinTeams = _context.IndividualTeam.Where(i => i.SingleTournamentWins == 2).ToList();
             List<IndividualTeam> twoWinSorted = SortBySpeaks(twoWinTeams);
@@ -537,25 +613,55 @@ namespace db8abase.Controllers
             return sortedList;
         }
 
-
+        public bool CheckBallotStatus(int id)
+        {
+            List<Round> rounds = _context.Round.Where(r => r.TournamentId == id).ToList();
+            List<Round> sortedRounds = rounds.OrderByDescending(r => r.RoundNumber).ToList();
+            Round round = sortedRounds[0];
+            List<Ballot> ballots = _context.Ballot.Where(b => b.RoundId == round.RoundId).ToList();
+            List<Ballot> turnedInBallots = new List<Ballot>();
+            foreach(var ballot in ballots)
+            {
+                if(ballot.BallotTurnedIn == true)
+                {
+                    turnedInBallots.Add(ballot);
+                }
+            }
+            if(ballots.Count() == turnedInBallots.Count())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public IActionResult PairRoundTwo(int id)
         {
-            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
-            List<Room> rooms = GetRooms(id);
-            List<IndividualTeam> affTeams = GetRoundTwoAffirmativeTeams(id);
-            List<IndividualTeam> negTeams = GetRoundTwoNegativeTeams(id);
-            List<Judge> judges = AssignRoundTwoJudges(affTeams, negTeams, id);
-            PushRoundTwoPairing(id, affTeams, negTeams, judges, rooms);
 
-            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            if (CheckBallotStatus(id) == true)
             {
-                Tournament = tournament,
-                Rooms = rooms,
-                AffirmativeTeams = affTeams,
-                NegativeTeams = negTeams,
-                Judges = judges,
-            };
-            return View(pairingVM);
+                Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+                List<Room> rooms = GetRooms(id);
+                List<IndividualTeam> affTeams = GetRoundTwoAffirmativeTeams(id);
+                List<IndividualTeam> negTeams = GetRoundTwoNegativeTeams(id);
+                List<Judge> judges = AssignRoundTwoJudges(affTeams, negTeams, id);
+                PushRoundTwoPairing(id, affTeams, negTeams, judges, rooms);
+
+                PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+                {
+                    Tournament = tournament,
+                    Rooms = rooms,
+                    AffirmativeTeams = affTeams,
+                    NegativeTeams = negTeams,
+                    Judges = judges,
+                };
+                return View(pairingVM);
+            }
+            else
+            {
+                return RedirectToAction("Pairings", "BallotsIncomplete");
+            }
         }
 
         public IActionResult SendRoundTwoPairing(int id)
@@ -682,7 +788,7 @@ namespace db8abase.Controllers
                 var random = new Random();
                 int index = random.Next(negTeams.Count);
                 var team = negTeams[index];
-                if (pairing.AffirmativeTeamId != team.IndividualTeamId)
+                if (pairing.AffirmativeTeamId != team.IndividualTeamId && roundTwoAffTeams[i].SchoolId != team.SchoolId)
                 {
                     roundTwoNegTeams.Add(team);
                     negTeams.Remove(team);
@@ -703,7 +809,7 @@ namespace db8abase.Controllers
                         var random2 = new Random();
                         int index2 = random.Next(negTeams.Count);
                         var team2 = negTeams[index2];
-                        if (pairing2.AffirmativeTeamId != team.IndividualTeamId)
+                        if (pairing2.AffirmativeTeamId != team.IndividualTeamId && roundTwoAffTeams[i].SchoolId != team2.SchoolId)
                         {
                             roundTwoNegTeams.Add(team2);
                             negTeams.Remove(team2);
