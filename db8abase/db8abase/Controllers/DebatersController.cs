@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using db8abase.Data;
 using db8abase.Models;
 using System.Security.Claims;
+using db8abase.Models.ViewModels;
 
 namespace db8abase.Controllers
 {
@@ -44,6 +45,51 @@ namespace db8abase.Controllers
             }
 
             return View(debater);
+        }
+
+        public IActionResult TournamentPairings()
+        {
+            List<Tournament> tournaments = _context.Tournament.ToList();
+            return View(tournaments);
+        }
+
+        public IActionResult ViewPairings(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            Debater debater = _context.Debater.FirstOrDefault(d => d.ApplicationUserId == currentUserId);
+            IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debater.IndividualTeamId);
+            List<Pairing> pairings = _context.Pairing.Where(p => p.AffirmativeTeamId == team.IndividualTeamId || p.NegativeTeamId == team.IndividualTeamId).ToList();
+            List<Judge> judges = new List<Judge>();
+            List<IndividualTeam> affTeams = new List<IndividualTeam>();
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            List<Room> rooms = new List<Room>();
+            List<Round> rounds = new List<Round>();
+            foreach(var pair in pairings)
+            {
+                Judge judge = _context.Judge.FirstOrDefault(j => j.JudgeId == pair.JudgeId);
+                judges.Add(judge);
+                IndividualTeam affTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pair.AffirmativeTeamId);
+                affTeams.Add(affTeam);
+                IndividualTeam negTeam = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pair.NegativeTeamId);
+                negTeams.Add(negTeam);
+                Room room = _context.Room.FirstOrDefault(r => r.RoomId == pair.RoomId);
+                rooms.Add(room);
+                Round round = _context.Round.FirstOrDefault(r => r.RoundId == pair.RoundId);
+                rounds.Add(round);
+            }
+
+            PairingsTabulationViewModel data = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rounds = rounds,
+                Rooms = rooms,
+                AffirmativeTeams = affTeams,
+                NegativeTeams = negTeams,
+                Judges = judges,
+                Debater = debater,
+            };
+            return View(data);
         }
 
         // GET: Debaters/Create

@@ -18,5 +18,7 @@ namespace db8abase.Models.ViewModels
         public Room Room { get; set; }
         public Round Round { get; set; }
         public Ballot Ballot { get; set; }
+        public List<Round> Rounds { get; set; }
+        public Debater Debater { get; set; }
     }
 }

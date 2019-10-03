@@ -1601,6 +1601,60 @@ namespace db8abase.Controllers
             return View(pairing);
         }
 
+        public IActionResult Results()
+        {
+            List<Tournament> tournaments = _context.Tournament.ToList();
+            return View(tournaments);
+        }
+
+        public IActionResult ViewResults(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<int> rankings = CreateRanking(id);
+            List<IndividualTeam> rankedTeams = GenerateRankedTeams(id);
+            List<TournamentResults> results = GenerateResults(id);
+
+            PairingsViewResultsViewModel data = new PairingsViewResultsViewModel()
+            {
+                Ranking = rankings,
+                Teams = rankedTeams,
+                Tournament = tournament,
+                Results = results,
+            };
+            return View(data);
+        }
+
+        public List<IndividualTeam> GenerateRankedTeams(int id)
+        {
+            List<TournamentResults> results = _context.TournamentResults.Where(t => t.TournamentId == id).ToList();
+            List<TournamentResults> rankedResults = results.OrderByDescending(r => r.TeamWins).ThenByDescending(r => r.SpeakerPoints).ToList();
+            List<IndividualTeam> rankedTeams = new List<IndividualTeam>();
+            foreach(var result in rankedResults)
+            {
+                IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == result.IndividualTeamId);
+                rankedTeams.Add(team);
+            }
+            return rankedTeams;
+        }
+        public List<TournamentResults> GenerateResults(int id)
+        {
+            List<TournamentResults> results = _context.TournamentResults.Where(t => t.TournamentId == id).ToList();
+            List<TournamentResults> rankedResults = results.OrderByDescending(r => r.TeamWins).ThenByDescending(r => r.SpeakerPoints).ToList();
+            return rankedResults;
+        }
+        public List<int> CreateRanking(int id)
+        {
+            List<IndividualTeam> teams = GetTeams(id);
+            List<int> rankings = new List<int>();
+            int count = 0;
+            for(int i = 0; i < teams.Count(); i++)
+            {
+                count++;
+                rankings.Add(count);
+            }
+            return rankings;
+        }
+
         // GET: Pairings/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
