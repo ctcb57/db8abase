@@ -23,7 +23,9 @@ namespace db8abase.Controllers
         // GET: Debaters
         public async Task<IActionResult> Index()
         {
-            return View();
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            Debater debater = _context.Debater.FirstOrDefault(d => d.ApplicationUserId == currentUserId);
+            return View(debater);
         }
 
         // GET: Debaters/Details/5
@@ -73,20 +75,18 @@ namespace db8abase.Controllers
         }
 
         // GET: Debaters/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var debater = await _context.Debater.FindAsync(id);
-            if (debater == null)
-            {
-                return NotFound();
-            }
-            return View(debater);
+            var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            var currentUser = _context.Users.FirstOrDefault(u => u.Id == currentUserId);
+            Debater debater = _context.Debater.Where(d => d.Email == currentUser.Email).Single();
+            debater.ApplicationUserId = currentUserId;
+            _context.Update(debater);
+            _context.SaveChanges();
+            return RedirectToAction("RegistrationConfirmation", "Home");
         }
+
+
 
         // POST: Debaters/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 

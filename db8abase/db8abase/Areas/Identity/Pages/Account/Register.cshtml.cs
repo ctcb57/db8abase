@@ -141,7 +141,7 @@ namespace db8abase.Areas.Identity.Pages.Account
                         await _userManager.AddToRoleAsync(user, StaticDetails.Debater);
                         var role = await _userManager.GetRolesAsync(user);
                         _logger.LogInformation("User logged in.");
-                        return RedirectToAction("Create", "Debaters", new { id = user.Id });
+                        return RedirectToAction("Edit", "Debaters", new { id = user.Id });
                     }
                     if (user.Role == "Judge")
                     {
