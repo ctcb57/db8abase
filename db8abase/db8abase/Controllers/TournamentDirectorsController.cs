@@ -91,6 +91,7 @@ namespace db8abase.Controllers
             Pairing pairing = _context.Pairing.FirstOrDefault(p => p.TournamentId == tournament.TournamentId);
             List<Round> rounds = _context.Round.Where(t => t.TournamentId == tournament.TournamentId).ToList();
             List<Round> roundsInOrder = rounds.OrderByDescending(r => r.RoundNumber).ToList();
+            List<Debater> speakerAwards = SpeakerAwardsList(tournament.TournamentId, roundsInOrder);
             Round round = new Round();
             if(rounds.Count() == 0)
             {
@@ -107,10 +108,129 @@ namespace db8abase.Controllers
                 Tournament = tournament,
                 Rounds = rounds,
                 Round = round,
+                SpeakerAwards = speakerAwards,
             };
             return View(portalVM);
         }
+        public IActionResult DisplaySpeakerAwards(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Round> rounds = _context.Round.Where(t => t.TournamentId == tournament.TournamentId).ToList();
+            List<Round> roundsInOrder = rounds.OrderByDescending(r => r.RoundNumber).ToList();
+            List<Debater> speakerAwards = SpeakerAwardsList(id, roundsInOrder);
+            List<School> schools = GetSpeakerAwardSchools(speakerAwards);
+            List<int> rankings = CreateRankings();
 
+            PairingsSpeakerPointsViewModel data = new PairingsSpeakerPointsViewModel()
+            {
+                Tournament = tournament,
+                Ranking = rankings,
+                Schools = schools,
+                SpeakerAwards = speakerAwards,
+            };
+            return View(data);
+        }
+        public IActionResult CompleteSpeakerAwards(int id)
+        {
+            List<IndividualTeam> teams = GetTeams(id);
+            List<Debater> debaters = new List<Debater>();
+            foreach(var team in teams)
+            {
+                Debater debater1 = _context.Debater.FirstOrDefault(d => d.DebaterId == team.FirstSpeakerId);
+                Debater debater2 = _context.Debater.FirstOrDefault(d => d.DebaterId == team.SecondSpeakerId);
+                debaters.Add(debater1);
+                debaters.Add(debater2);
+            }
+            foreach(var debater in debaters)
+            {
+                int numberOfTournaments = _context.TeamEntry.Where(t => t.IndividualTeamId == debater.IndividualTeamId).ToList().Count();
+                debater.AnnualAverageSpeakerPoints = (((debater.AnnualAverageSpeakerPoints * (numberOfTournaments - 1)) + debater.IndividualTournamentSpeakerPoints) / numberOfTournaments);
+                debater.IndividualTournamentSpeakerPoints = 0;
+                _context.Update(debater);
+                _context.SaveChanges();
+            }
+            return View();
+        }
+        
+        public List<int> CreateRankings()
+        {
+            List<int> rankings = new List<int>();
+            int speakerThreshold = 10;
+            int count = 0;
+            for(int i = 0; i < speakerThreshold; i++)
+            {
+                count++;
+                rankings.Add(count);
+            }
+            return rankings;
+        }
+
+        public List<School> GetSpeakerAwardSchools(List<Debater> speakers)
+        {
+            List<School> schools = new List<School>();
+            foreach(var speaker in speakers)
+            {
+                School school = _context.School.FirstOrDefault(s => s.SchoolId == speaker.SchoolId);
+                schools.Add(school);
+            }
+            return schools;
+        }
+
+        public List<Debater> SpeakerAwardsList(int id, List<Round> roundsInOrder)
+        {
+            if (roundsInOrder[0].RoundNumber == 4)
+            {
+                Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+                List<IndividualTeam> teams = GetTeams(id);
+                List<Debater> debaters = new List<Debater>();
+                List<Debater> speakerAwards = new List<Debater>();
+                List<Debater> emptyList = new List<Debater>();
+                int speakerAwardThreshold = 10;
+                foreach (var team in teams)
+                {
+                    Debater debater1 = _context.Debater.FirstOrDefault(d => d.DebaterId == team.FirstSpeakerId);
+                    Debater debater2 = _context.Debater.FirstOrDefault(d => d.DebaterId == team.SecondSpeakerId);
+                    debaters.Add(debater1);
+                    debaters.Add(debater2);
+                }
+                List<Debater> speakerRankings = debaters.OrderByDescending(d => d.IndividualTournamentSpeakerPoints).ToList();
+                for (int i = 0; i < speakerAwardThreshold; i++)
+                {
+                    speakerAwards.Add(speakerRankings[i]);
+                }
+                if(speakerAwards[0].IndividualTournamentSpeakerPoints == 0)
+                {
+                    return emptyList;
+                }
+                else
+                {
+                    return speakerAwards;
+                }
+            }
+            else
+            {
+                List<Debater> fakeList = new List<Debater>();
+                return fakeList;
+            }
+        }
+        public List<IndividualTeam> GetTeams(int id)
+        {
+            List<IndividualTeam> teams = new List<IndividualTeam>();
+            var entries = _context.TeamEntry.Where(t => t.TournamentId == id).ToList();
+            var individualTeams = _context.IndividualTeam.ToList();
+            foreach (var entry in entries)
+            {
+                for (int i = 0; i < individualTeams.Count; i++)
+                {
+                    if (entry.IndividualTeamId == individualTeams[i].IndividualTeamId)
+                    {
+                        var locatedTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == individualTeams[i].IndividualTeamId);
+                        teams.Add(locatedTeam);
+                    }
+                }
+            }
+            return teams;
+        }
         public IActionResult ViewIndividualRound(int id)
         {
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();

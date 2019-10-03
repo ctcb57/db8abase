@@ -431,6 +431,7 @@ namespace db8abase.Controllers
             }
             return teams;
         }
+
         public List<Judge> GetJudges(int id)
         {
             List<Judge> judges = new List<Judge>();
@@ -481,7 +482,7 @@ namespace db8abase.Controllers
                     negativeTeams.Add(finalOrder[i]);
                 }
             }
-            List<Judge> judges = AssignRoundThreeJudges(affirmativeTeams, negativeTeams, id);
+            List<Judge> judges = AssignRoundFourJudges(affirmativeTeams, negativeTeams, id);
             PushRoundThreePairing(id, affirmativeTeams, negativeTeams, judges, rooms);
 
             PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
@@ -531,33 +532,8 @@ namespace db8abase.Controllers
         public List<IndividualTeam> SortTeamsByRecord(int id)
         {
             List<IndividualTeam> tournamentTeams = GetTeams(id);
-
             List<IndividualTeam> sort = tournamentTeams.OrderByDescending(t => t.SingleTournamentWins).ThenByDescending(t => t.SingleTournamentSpeakerPoints).ToList();
-            List<IndividualTeam> teamsSortedByWins = new List<IndividualTeam>();
-            List<IndividualTeam> twoWinTeams = _context.IndividualTeam.Where(i => i.SingleTournamentWins == 2).ToList();
-            List<IndividualTeam> twoWinSorted = SortBySpeaks(twoWinTeams);
-            foreach(var entry in twoWinSorted)
-            {
-                teamsSortedByWins.Add(entry);
-            }
-            List<IndividualTeam> zeroWinTeams = _context.IndividualTeam.Where(i => i.SingleTournamentWins == 0).ToList();
-            List<IndividualTeam> zeroWinSorted = SortBySpeaks(zeroWinTeams);
-            foreach (var entry in zeroWinSorted)
-            {
-                teamsSortedByWins.Add(entry);
-            }
-            List<IndividualTeam> oneWinTeams = _context.IndividualTeam.Where(i => i.SingleTournamentWins == 1).ToList();
-            List<IndividualTeam> oneWinSorted = SortBySpeaks(oneWinTeams);
-
-            while(oneWinSorted.Count() > 0)
-            {
-                var random = new Random();
-                int index = random.Next(oneWinSorted.Count);
-                var team = oneWinSorted[index];
-                teamsSortedByWins.Add(team);
-                oneWinSorted.Remove(team);
-            }
-            return teamsSortedByWins;
+            return sort;
         }
 
         public List<IndividualTeam> SortRoundThreeTeams(List<IndividualTeam> sortedTeams, int id)
@@ -574,7 +550,7 @@ namespace db8abase.Controllers
                 {
                     for(int k = 0; k < pairings.Count(); k++)
                     {
-                        if(pairings[k].AffirmativeTeamId == teams[j].IndividualTeamId || pairings[k].NegativeTeamId == teams[j].IndividualTeamId)
+                        if(pairings[k].AffirmativeTeamId == teams[j].IndividualTeamId || pairings[k].NegativeTeamId == teams[j].IndividualTeamId || teams[i].SchoolId == teams[j].SchoolId)
                         {
                             break;
                         }
@@ -829,7 +805,7 @@ namespace db8abase.Controllers
             List<IndividualTeam> affTeams = new List<IndividualTeam>();
             List<IndividualTeam> negTeams = new List<IndividualTeam>();
             List<IndividualTeam> orderedTeams = MatchRoundFourTeams(id);
-            for(int i = 0; i < orderedTeams.Count() / 2; i++)
+            for (int i = 0; i < orderedTeams.Count() / 2; i++)
             {
                 affTeams.Add(orderedTeams[i]);
             }
@@ -869,7 +845,7 @@ namespace db8abase.Controllers
                 for (int j = 0; j < judges.Count(); j++)
                 {
                     count++;
-                    if (judges[j].SchoolId != affTeams[i].SchoolId || judges[j].SchoolId != negTeams[j].SchoolId)
+                    if (judges[j].SchoolId != affTeams[i].SchoolId && judges[j].SchoolId != negTeams[i].SchoolId)
                     {
                         for(int k = 0; k < affPairings.Count(); k++)
                         {
@@ -897,22 +873,60 @@ namespace db8abase.Controllers
             return assignedJudges;
         }
         
+        public void PushPrelimResults(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<IndividualTeam> teams = GetTeams(id);
+            foreach(var team in teams)
+            {
+                TournamentResults result = new TournamentResults();
+                result.IndividualTeamId = team.IndividualTeamId;
+                result.TeamWins = team.SingleTournamentWins;
+                result.TeamLosses = team.SingleTournamentLosses;
+                int speakerPoints = Convert.ToInt32(team.SingleTournamentSpeakerPoints);
+                result.SpeakerPoints = speakerPoints;
+                _context.Add(result);
+                _context.SaveChanges();
+            }
+        }
 
+        public List<Debater> SpeakerAwardsList(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<IndividualTeam> teams = GetTeams(id);
+            List<Debater> debaters = new List<Debater>();
+            List<Debater> speakerAwards = new List<Debater>();
+            int speakerAwardThreshold = 10;
+            foreach(var team in teams)
+            {
+                Debater debater1 = _context.Debater.FirstOrDefault(d => d.DebaterId == team.FirstSpeakerId);
+                Debater debater2 = _context.Debater.FirstOrDefault(d => d.DebaterId == team.SecondSpeakerId);
+                debaters.Add(debater1);
+                debaters.Add(debater2);
+            }
+            List<Debater> speakerRankings = debaters.OrderByDescending(d => d.IndividualTournamentSpeakerPoints).ToList();
+            for(int i = 0; i < speakerAwardThreshold; i++)
+            {
+                speakerAwards.Add(speakerRankings[i]);
+            }
+            return speakerAwards;
+        }
         public List<IndividualTeam> SortRoundFourNegTeams(int id)
         {
             List<IndividualTeam> dueNegTeams = FindDueNegTeams(id);
-            List<IndividualTeam> sortedNegTeams = dueNegTeams.OrderByDescending(s => s.SingleTournamentWins).ToList();
+            List<IndividualTeam> sortedNegTeams = dueNegTeams.OrderByDescending(s => s.SingleTournamentWins).ThenByDescending(s => s.SingleTournamentSpeakerPoints).ToList();
             return sortedNegTeams;
         }
 
         public List<IndividualTeam> SortRoundFourAffTeams(int id)
         {
             List<IndividualTeam> dueAffTeams = FindDueAffTeams(id);
-            List<IndividualTeam> sortedAffTeams = dueAffTeams.OrderByDescending(s => s.SingleTournamentWins).ToList();
+            List<IndividualTeam> sortedAffTeams = dueAffTeams.OrderByDescending(s => s.SingleTournamentWins).ThenByDescending(s => s.SingleTournamentSpeakerPoints).ToList();
             return sortedAffTeams;
         }
         public List<IndividualTeam> MatchRoundFourTeams(int id)
         {
+            List<IndividualTeam> allTeams = GetTeams(id);
             List<IndividualTeam> dueAffTeams = SortRoundFourAffTeams(id);
             List<IndividualTeam> dueNegTeams = SortRoundFourNegTeams(id);
             List<IndividualTeam> affTeams = new List<IndividualTeam>();
@@ -927,7 +941,7 @@ namespace db8abase.Controllers
                 {
                     for(int k = 0; k < teamPairings.Count(); k++)
                     {
-                        if(teamPairings[k].AffirmativeTeamId == dueNegTeams[j].IndividualTeamId || teamPairings[k].NegativeTeamId == dueNegTeams[j].IndividualTeamId)
+                        if (teamPairings[k].AffirmativeTeamId == dueNegTeams[j].IndividualTeamId || teamPairings[k].NegativeTeamId == dueNegTeams[j].IndividualTeamId || dueAffTeams[i].SchoolId == dueNegTeams[j].SchoolId)
                         {
                             count++;
                             break;
@@ -956,22 +970,132 @@ namespace db8abase.Controllers
             {
                 finalOrder.Add(team);
             }
-            return finalOrder;
+            if (allTeams.Count() != finalOrder.Count())
+            {
+                List<IndividualTeam> newNegList = MatchRoundFourPlease(id);
+                List<IndividualTeam> newAffList = SortRoundFourAffTeams(id);
+                List<IndividualTeam> anotherOrder = new List<IndividualTeam>();
+                foreach (var team in newAffList)
+                {
+                    anotherOrder.Add(team);
+                }
+                foreach (var team in newNegList)
+                {
+                    anotherOrder.Add(team);
+                }
+                if (anotherOrder.Count() != allTeams.Count())
+                {
+                    List<IndividualTeam> newerNegList = MatchRoundFourPlease(id);
+                    List<IndividualTeam> newerAffList = SortRoundFourAffTeams(id);
+                    List<IndividualTeam> differentOrder = new List<IndividualTeam>();
+                    foreach (var team in newerAffList)
+                    {
+                        differentOrder.Add(team);
+                    }
+                    foreach (var team in newerNegList)
+                    {
+                        differentOrder.Add(team);
+                    }
+                    return differentOrder;
+                }
+                else
+                {
+                    return anotherOrder;
+                }
+            }
+            else
+            {
+                return finalOrder;
+            }
+        }
+        public List<IndividualTeam> MatchRoundFourPlease(int id)
+        {
+            List<IndividualTeam> dueAffTeams = SortRoundFourAffTeams(id);
+            List<IndividualTeam> dueNegTeams = SortRoundFourNegTeams(id);
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            int count = 0;
+            for (int i = 0; i < dueAffTeams.Count(); i++)
+            {
+                var random = new Random();
+                int index = random.Next(dueNegTeams.Count);
+                var team = dueNegTeams[index];
+                List<Pairing> affPairings = _context.Pairing.Where(p => p.TournamentId == id && (p.AffirmativeTeamId == dueAffTeams[i].IndividualTeamId || p.NegativeTeamId == dueAffTeams[i].IndividualTeamId)).ToList();
+                for(int j = 0; j < affPairings.Count(); j++)
+                {
+                    if (affPairings[j].AffirmativeTeamId == team.IndividualTeamId || affPairings[j].NegativeTeamId == team.IndividualTeamId || dueAffTeams[i].SchoolId == team.SchoolId)
+                    {
+                        i -= 1;
+                        break;
+                    }
+                    else if(j == (affPairings.Count() - 1))
+                    {
+                        negTeams.Add(team);
+                        dueNegTeams.Remove(team);
+                    }
+                }
+                count++;
+                if(count == (dueAffTeams.Count() * 5))
+                {
+                    return negTeams;
+                }
+            }
+            return negTeams;
         }
 
+
+        public List<IndividualTeam> MatchRoundFourDifferentMethod(int id)
+        {
+            List<IndividualTeam> dueAffTeams = SortRoundFourAffTeams(id);
+            List<IndividualTeam> dueNegTeams = SortRoundFourNegTeams(id);
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            List<IndividualTeam> finalOrder = new List<IndividualTeam>();
+            List<Pairing> pairings = _context.Pairing.Where(p => p.TournamentId == id).ToList();
+            int i = 0;
+            int j = 0;
+            while (negTeams.Count() < dueAffTeams.Count())
+            {
+                List<Pairing> affPairings = _context.Pairing.Where(p => p.TournamentId == id && (p.AffirmativeTeamId == dueAffTeams[i].IndividualTeamId || p.NegativeTeamId == dueAffTeams[i].IndividualTeamId)).ToList();
+                var random = new Random();
+                int index = random.Next(dueNegTeams.Count);
+                var team = dueNegTeams[index];
+                for(int k = 0; k < affPairings.Count(); k++)
+                {
+                    if(j == dueNegTeams.Count)
+                    {
+                        j -= 1;
+                    }
+                    if (affPairings[k].AffirmativeTeamId == dueNegTeams[j].IndividualTeamId || affPairings[j].NegativeTeamId == dueNegTeams[j].IndividualTeamId || dueAffTeams[i].SchoolId == dueNegTeams[j].SchoolId)
+                    {
+                        j++;
+                        break;
+                    }
+                    else if(k == (affPairings.Count() - 1))
+                    {
+                        negTeams.Add(dueNegTeams[j]);
+                        dueNegTeams.Remove(dueNegTeams[j]);
+                        i++;
+                        j = 0;
+                    }
+                }
+            }
+            return negTeams;
+        }
+       
         public IActionResult DetermineNumberOfElimRounds(int id)
         {
             int quarterFinalsThreshold = 16;
+            string quarters = "quarters";
             int semiFinalsThreshold = 8;
+            string semis = "semis";
             int numberOfTeams = GetTeams(id).Count();
             if (numberOfTeams > quarterFinalsThreshold)
             {
-                PairingsTabulationViewModel pairingVM = PairFirstOutRound(id, quarterFinalsThreshold);
+                PairingsTabulationViewModel pairingVM = PairFirstOutRound(id, quarterFinalsThreshold, quarters);
                 return View(pairingVM);
             }
             else
             {
-                PairingsTabulationViewModel pairingVM = PairFirstOutRound(id, semiFinalsThreshold);
+                PairingsTabulationViewModel pairingVM = PairFirstOutRound(id, semiFinalsThreshold, semis);
                 return View(pairingVM);
             }
             return View();
@@ -1148,15 +1272,50 @@ namespace db8abase.Controllers
             return finalStandings;
         }
 
-        public PairingsTabulationViewModel PairFirstOutRound(int id, int outRoundThreshold)
+        public PairingsTabulationViewModel PairFirstOutRound(int id, int outRoundThreshold, string outRoundTitle)
         {
+            PushPrelimResults(id);
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             List<Room> rooms = GetRooms(id);
             List<IndividualTeam> finalStandings = GetPrelimFinalStandings(id);
+            List<IndividualTeam> allTeams = GetTeams(id);
             List<IndividualTeam> outRoundsTeams = new List<IndividualTeam>();
+            List<IndividualTeam> nonOutRoundTeams = new List<IndividualTeam>();
             for(int i = 0; i < outRoundThreshold / 2; i++)
             {
                 outRoundsTeams.Add(finalStandings[i]);
+            }
+            for(int k = 0; k < allTeams.Count(); k++)
+            {
+                for(int l = 0; l < outRoundsTeams.Count(); l++)
+                {
+                    if(allTeams[k].IndividualTeamId == outRoundsTeams[l].IndividualTeamId)
+                    {
+                        break;
+                    }
+                    else if(l == (outRoundsTeams.Count() - 1))
+                    {
+                        nonOutRoundTeams.Add(allTeams[k]);
+                    }
+                }
+            }
+            foreach(var team in nonOutRoundTeams)
+            {
+                TournamentResults result = _context.TournamentResults.Where(t => t.TournamentId == id && t.IndividualTeamId == team.IndividualTeamId).Single();
+                team.SingleTournamentSpeakerPoints = 0;
+                team.SingleTournamentWins = 0;
+                team.SingleTournamentLosses = 0;
+                result.EliminationRoundResult = "none";
+                _context.Update(team);
+                _context.Update(result);
+                _context.SaveChanges();
+            }
+            foreach(var team in outRoundsTeams)
+            {
+                TournamentResults result = _context.TournamentResults.Where(t => t.TournamentId == id && t.IndividualTeamId == team.IndividualTeamId).Single();
+                result.EliminationRoundResult = outRoundTitle;
+                _context.Update(result);
+                _context.SaveChanges();
             }
             List<IndividualTeam> seedingOrder = SeedOutrounds(outRoundsTeams);
             List<IndividualTeam> affTeams = new List<IndividualTeam>();

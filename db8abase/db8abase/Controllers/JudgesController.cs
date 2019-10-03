@@ -134,8 +134,8 @@ namespace db8abase.Controllers
             secondAffSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.SecondAffSpeakerPoints;
             firstNegSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.FirstNegSpeakerPoints;
             secondNegSpeaker.IndividualTournamentSpeakerPoints += data.Ballot.SecondNegSpeakerPoints;
-            affTeam.SingleTournamentSpeakerPoints += (firstAffSpeaker.IndividualTournamentSpeakerPoints + secondAffSpeaker.IndividualTournamentSpeakerPoints);
-            negTeam.SingleTournamentSpeakerPoints += (firstNegSpeaker.IndividualTournamentSpeakerPoints + secondNegSpeaker.IndividualTournamentSpeakerPoints);
+            affTeam.SingleTournamentSpeakerPoints += (data.Ballot.FirstAffSpeakerPoints + data.Ballot.SecondAffSpeakerPoints);
+            negTeam.SingleTournamentSpeakerPoints += (data.Ballot.FirstNegSpeakerPoints + data.Ballot.SecondNegSpeakerPoints);
             ballot.WinnerId = winnerId;
             pairing.WinnerId = winnerId;
             winningTeam.SingleTournamentWins++;
