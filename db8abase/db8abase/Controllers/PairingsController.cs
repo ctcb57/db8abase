@@ -880,6 +880,7 @@ namespace db8abase.Controllers
             foreach(var team in teams)
             {
                 TournamentResults result = new TournamentResults();
+                result.TournamentId = id;
                 result.IndividualTeamId = team.IndividualTeamId;
                 result.TeamWins = team.SingleTournamentWins;
                 result.TeamLosses = team.SingleTournamentLosses;
@@ -1184,6 +1185,10 @@ namespace db8abase.Controllers
             foreach(var pairing in previousPairings)
             {
                 IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.WinnerId);
+                TournamentResults result = _context.TournamentResults.Where(t => t.TournamentId == id && t.IndividualTeamId == team.IndividualTeamId).Single();
+                result.EliminationRoundResult = "semis";
+                _context.Update(result);
+                _context.SaveChanges();
                 quartersWinners.Add(team);
             }
             List<IndividualTeam> sortedWinners = quartersWinners.OrderByDescending(q => q.SingleTournamentWins).ThenByDescending(q => q.SingleTournamentSpeakerPoints).ToList();
@@ -1215,7 +1220,7 @@ namespace db8abase.Controllers
                         sortedTeams.Add(highSeeds[k]);
                         break;
                     }
-                    else if(k == (highSeedPairings.Count() - 1))
+                    else if(l == (highSeedPairings.Count() - 1))
                     {
                         sortedTeams.Add(highSeeds[k]);
                         sortedTeams.Add(lowSeeds[k]);
@@ -1225,6 +1230,46 @@ namespace db8abase.Controllers
             }
             return sortedTeams;
         }
+
+        public IActionResult PairLastRound(int id)
+        {
+            Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
+            List<Room> rooms = GetRooms(id);
+            List<IndividualTeam> affTeams = new List<IndividualTeam>();
+            List<IndividualTeam> negTeams = new List<IndividualTeam>();
+            List<IndividualTeam> judges = new List<IndividualTeam>();
+            Round previousRound = _context.Round.Where(r => r.TournamentId == id && r.RoundNumber == 6).Single();
+            List<Pairing> previousPairings = _context.Pairing.Where(p => p.RoundId == previousRound.RoundId).ToList();
+            List<IndividualTeam> semisWinners = new List<IndividualTeam>();
+            foreach (var pairing in previousPairings)
+            {
+                IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.WinnerId);
+                semisWinners.Add(team);
+            }
+            List<IndividualTeam> sortedTeams = PairFinals(id);
+            for (int i = 0; i < sortedTeams.Count(); i++)
+            {
+                affTeams.Add(sortedTeams[i]);
+                negTeams.Add(sortedTeams[i + 1]);
+                sortedTeams.Remove(sortedTeams[i]);
+                sortedTeams.Remove(sortedTeams[i]);
+                i = -1;
+            }
+            int teamCount = (semisWinners.Count() * 2);
+            List<Judge> finalsJudges = AssignOutRoundJudges(affTeams, negTeams, id, teamCount);
+            PushOutRoundPairing(id, semisWinners, affTeams, negTeams, finalsJudges, rooms);
+
+            PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
+            {
+                Tournament = tournament,
+                Rooms = rooms,
+                AffirmativeTeams = affTeams,
+                NegativeTeams = negTeams,
+                Judges = finalsJudges,
+            };
+            return View(pairingVM);
+        }
+
         public List<IndividualTeam> PairFinals(int id)
         {
             Round previousRound = _context.Round.Where(r => r.TournamentId == id && r.RoundNumber == 6).Single();
@@ -1233,6 +1278,10 @@ namespace db8abase.Controllers
             foreach(var pairing in previousPairings)
             {
                 IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == pairing.WinnerId);
+                TournamentResults result = _context.TournamentResults.Where(t => t.TournamentId == id && t.IndividualTeamId == team.IndividualTeamId).Single();
+                result.EliminationRoundResult = "finals";
+                _context.Update(result);
+                _context.SaveChanges();
                 semisWinners.Add(team);
             }
             List<IndividualTeam> sortedTeams = new List<IndividualTeam>();
@@ -1305,6 +1354,8 @@ namespace db8abase.Controllers
                 team.SingleTournamentSpeakerPoints = 0;
                 team.SingleTournamentWins = 0;
                 team.SingleTournamentLosses = 0;
+                team.TournamentAffirmativeRounds = 0;
+                team.TournamentNegativeRounds = 0;
                 result.EliminationRoundResult = "none";
                 _context.Update(team);
                 _context.Update(result);

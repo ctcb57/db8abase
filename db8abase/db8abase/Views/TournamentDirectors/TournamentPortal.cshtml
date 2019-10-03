@@ -45,6 +45,10 @@
 {
     <p>If Round 4 has completed and the below link says "Speaker Awards", click it to the submit awards</p>
 }
+else if(Model.Round.RoundNumber == 7)
+{
+    <p></p>
+}
 else
 {
     <p>If rounds are not present, click the link below to pair the first round</p>
@@ -84,20 +88,24 @@ else if (Model.Round.RoundNumber == 4 && Model.SpeakerAwards.Count() > 0)
 else if (Model.Round.RoundNumber == 4)
 {
     <p>
-        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+        <a asp-controller="Pairings" asp-action="DetermineNumberOfElimRounds" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Pair First Outround</a>
     </p>
 }
 else if (Model.Round.RoundNumber == 5)
 {
     <p>
-        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+        <a asp-controller="Pairings" asp-action="PairSecondElimRound" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Pair Second Outround</a>
     </p>
 }
 else if (Model.Round.RoundNumber == 6)
 {
     <p>
-        <a asp-controller="TournamentDirectors" asp-action="TournamentPortal" style="color:#087485">Send Pairings</a>
+        <a asp-controller="Pairings" asp-action="PairLastRound" asp-route-id="@Model.Tournament.TournamentId" style="color:#087485">Pair Final Round</a>
     </p>
+}
+else if (Model.Round.RoundNumber == 7)
+{
+    <p>All rounds have been completed and all data has been transferred to the results portal</p>
 }
 else
 {

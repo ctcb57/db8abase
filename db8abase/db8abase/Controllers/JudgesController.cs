@@ -138,13 +138,38 @@ namespace db8abase.Controllers
             negTeam.SingleTournamentSpeakerPoints += (data.Ballot.FirstNegSpeakerPoints + data.Ballot.SecondNegSpeakerPoints);
             ballot.WinnerId = winnerId;
             pairing.WinnerId = winnerId;
-            winningTeam.SingleTournamentWins++;
             if(round.RoundNumber > 4)
             {
                 winningTeam.CumulativeAnnualElminationRoundWins++;
+                losingTeam.SingleTournamentSpeakerPoints = 0;
+                losingTeam.SingleTournamentWins = 0;
+                losingTeam.SingleTournamentLosses = 0;
+                losingTeam.TournamentAffirmativeRounds = 0;
+                losingTeam.TournamentNegativeRounds = 0;
+            }
+            if(round.RoundNumber == 7)
+            {
+                TournamentResults result = _context.TournamentResults.Where(t => t.TournamentId == pairing.TournamentId && t.IndividualTeamId == winningTeam.IndividualTeamId).Single();
+                result.EliminationRoundResult = "winner";
+                _context.Update(result);
+                winningTeam.CumulativeAnnualElminationRoundWins++;
+                winningTeam.SingleTournamentSpeakerPoints = 0;
+                winningTeam.SingleTournamentWins = 0;
+                winningTeam.SingleTournamentLosses = 0;
+                winningTeam.TournamentAffirmativeRounds = 0;
+                winningTeam.TournamentNegativeRounds = 0;
+                losingTeam.SingleTournamentSpeakerPoints = 0;
+                losingTeam.SingleTournamentWins = 0;
+                losingTeam.SingleTournamentLosses = 0;
+                losingTeam.TournamentAffirmativeRounds = 0;
+                losingTeam.TournamentNegativeRounds = 0;
+            }
+            if(round.RoundNumber <= 4)
+            {
+                winningTeam.SingleTournamentWins++;
+                losingTeam.SingleTournamentLosses++;
             }
             winningTeam.CumulativeAnnualWins++;
-            losingTeam.SingleTournamentLosses++;
             losingTeam.CumulativeAnnualLosses++;
             ballot.BallotTurnedIn = true;
             _context.Update(ballot);
