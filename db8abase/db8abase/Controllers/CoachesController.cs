@@ -280,6 +280,112 @@ namespace db8abase.Controllers
             return items;
         }
 
+        public IActionResult PickTeams()
+        {
+            List<SelectListItem> firstTeam = PopulateAllTeams();
+            List<SelectListItem> secondTeam = PopulateAllTeams();
+
+            CoachesViewReportsViewModel data = new CoachesViewReportsViewModel()
+            {
+                FirstTeamList = firstTeam,
+                SecondTeamList = secondTeam,
+            };
+            return View(data);
+        }
+
+        public IActionResult ViewRecords(CoachesViewReportsViewModel data)
+        {
+            int firstTeamId = Convert.ToInt32(data.FirstTeamList);
+            int secondTeamId = Convert.ToInt32(data.SecondTeamList);
+            IndividualTeam team1 = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == firstTeamId);
+            IndividualTeam team2 = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == secondTeamId);
+            var firstModel = new List<SimpleReportViewModel>();
+            List<Tournament> firstTeamTournament = PopulateTournaments(team1.IndividualTeamId);
+            List<Tournament> secondTeamTournament = PopulateTournaments(team2.IndividualTeamId);
+            List<TournamentResults> firstTeamResults = PopulateResults(team1.IndividualTeamId);
+            List<TournamentResults> secondTeamResults = PopulateResults(team2.IndividualTeamId);
+            List<CoachesViewReportsViewModel> firstTeamData = new List<CoachesViewReportsViewModel>();
+            List<CoachesViewReportsViewModel> secondTeamData = new List<CoachesViewReportsViewModel>();
+            List<SimpleReportViewModel> firstTeamReports = new List<SimpleReportViewModel>();
+            List<SimpleReportViewModel> secondTeamReports = new List<SimpleReportViewModel>();
+            for (int i = 0; i < firstTeamTournament.Count(); i++)
+            {
+                CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                {
+                    TournamentName = firstTeamTournament[i].Name,
+                    Wins = firstTeamResults[i].TeamWins,
+                };
+                firstTeamData.Add(teamData);
+            }
+            foreach (var item in firstTeamData)
+            {
+                firstTeamReports.Add(new SimpleReportViewModel
+                {
+                    DimensionOne = item.TournamentName,
+                    Quantity = item.Wins,
+                });
+            }
+            for(int j = 0; j < secondTeamTournament.Count(); j++)
+            {
+                CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                {
+                    TournamentName = secondTeamTournament[j].Name,
+                    Wins = secondTeamResults[j].TeamWins,
+                };
+                secondTeamData.Add(teamData);
+            }
+            foreach (var item in secondTeamData)
+            {
+                secondTeamReports.Add(new SimpleReportViewModel
+                {
+                    DimensionOne = item.TournamentName,
+                    Quantity = item.Wins,
+                });
+            }
+
+            CoachesViewReportsViewModel viewData = new CoachesViewReportsViewModel()
+            {
+                FirstTeamReports = firstTeamReports,
+                SecondTeamReports = secondTeamReports,
+                TeamOne = team1,
+                TeamTwo = team2,
+            };
+            return View(viewData);
+        }
+
+        public List<TournamentResults> PopulateResults(int id)
+        {
+            List<TournamentResults> results = _context.TournamentResults.Where(t => t.IndividualTeamId == id).ToList();
+            return results;
+        }
+
+        public List<Tournament> PopulateTournaments(int id)
+        {
+            List<Tournament> tournaments = new List<Tournament>();
+            List<TeamEntry> entries = _context.TeamEntry.Where(t => t.IndividualTeamId == id).ToList();
+            foreach(var entry in entries)
+            {
+                Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == entry.TournamentId);
+                tournaments.Add(tournament);
+            }
+            return tournaments;
+        }
+
+        public List<SelectListItem> PopulateAllTeams()
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+            List<IndividualTeam> teams = _context.IndividualTeam.ToList();
+            foreach(var team in teams)
+            {
+                items.Add(new SelectListItem
+                {
+                    Text = $"{ team.IndividualTeamName}",
+                    Value = team.IndividualTeamId.ToString()
+                });
+            }
+            return items;
+        }
+
         // GET: Coaches/ViewTournamentDetails
         public IActionResult ViewTournamentDetails(int id)
         {

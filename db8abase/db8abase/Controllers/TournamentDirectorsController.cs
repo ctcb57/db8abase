@@ -91,7 +91,15 @@ namespace db8abase.Controllers
             Pairing pairing = _context.Pairing.FirstOrDefault(p => p.TournamentId == tournament.TournamentId);
             List<Round> rounds = _context.Round.Where(t => t.TournamentId == tournament.TournamentId).ToList();
             List<Round> roundsInOrder = rounds.OrderByDescending(r => r.RoundNumber).ToList();
-            List<Debater> speakerAwards = SpeakerAwardsList(tournament.TournamentId, roundsInOrder);
+            List<Debater> awards = new List<Debater>();
+            if(roundsInOrder.Count() > 0)
+            {
+                List<Debater> speakerAwards = SpeakerAwardsList(tournament.TournamentId, roundsInOrder);
+                foreach(var award in speakerAwards)
+                {
+                    awards.Add(award);
+                }
+            }
             Round round = new Round();
             if(rounds.Count() == 0)
             {
@@ -108,7 +116,7 @@ namespace db8abase.Controllers
                 Tournament = tournament,
                 Rounds = rounds,
                 Round = round,
-                SpeakerAwards = speakerAwards,
+                SpeakerAwards = awards,
             };
             return View(portalVM);
         }

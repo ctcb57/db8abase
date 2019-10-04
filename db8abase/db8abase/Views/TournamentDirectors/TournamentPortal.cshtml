@@ -41,7 +41,11 @@
 </table>
 <br />
 <br />
-@if (Model.Round.RoundNumber == 4 && Model.SpeakerAwards.Count() > 0)
+@if(Model.Round == null)
+{
+    <p>Click below to pair the first round</p>
+}
+else if (Model.Round.RoundNumber == 4 && Model.SpeakerAwards.Count() > 0)
 {
     <p>If Round 4 has completed and the below link says "Speaker Awards", click it to the submit awards</p>
 }

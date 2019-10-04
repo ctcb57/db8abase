@@ -104,6 +104,8 @@ namespace db8abase.Controllers
             return teams;
         }
 
+
+
         public List<Judge> GetJudgeEntries(int id)
         {
             List<Judge> judges = new List<Judge>();
