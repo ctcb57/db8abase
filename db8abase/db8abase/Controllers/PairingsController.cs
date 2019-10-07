@@ -70,6 +70,40 @@ Thank you."
             }
         }
 
+        public void SendPairingEmailToDebater(string lastName, string firstName, string emailAddress, IndividualTeam opponent, Room room, Judge judge)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Name", "devcodecampsweepstakes@gmail.com"));
+            message.To.Add(new MailboxAddress(lastName, emailAddress));
+            message.Subject = "Judging assignment";
+
+            message.Body = new TextPart("plain")
+            {
+                Text = $@"{firstName} {lastName},
+
+You are scheduled to debate this round.  Your debate will be in {room.RoomNumber}.
+
+You will be facing {opponent.IndividualTeamName} and your judge is {judge.FirstName} {judge.LastName}.
+Let the Tournament Director know if you have any questions.
+
+
+
+Thank you."
+            };
+
+            using (var client = new SmtpClient())
+            {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                client.Connect("smtp.gmail.com", 587, false);
+
+                client.Authenticate("devcodecampsweepstakes", "Cc283192");
+
+                client.Send(message);
+                client.Disconnect(true);
+            }
+        }
+
         public IActionResult ViewRoundDetails(int id)
         {
             List<Ballot> ballots = GetBallots(id);

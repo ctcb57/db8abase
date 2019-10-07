@@ -59,7 +59,7 @@ namespace db8abase.Controllers
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             Debater debater = _context.Debater.FirstOrDefault(d => d.ApplicationUserId == currentUserId);
             IndividualTeam team = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == debater.IndividualTeamId);
-            List<Pairing> pairings = _context.Pairing.Where(p => p.AffirmativeTeamId == team.IndividualTeamId || p.NegativeTeamId == team.IndividualTeamId).ToList();
+            List<Pairing> pairings = _context.Pairing.Where(p => p.TournamentId == id && (p.AffirmativeTeamId == team.IndividualTeamId || p.NegativeTeamId == team.IndividualTeamId)).ToList();
             List<Judge> judges = new List<Judge>();
             List<IndividualTeam> affTeams = new List<IndividualTeam>();
             List<IndividualTeam> negTeams = new List<IndividualTeam>();
