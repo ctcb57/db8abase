@@ -1,0 +1,36 @@
+﻿@model db8abase.Models.ViewModels.CoachesViewReportsViewModel
+@{
+    ViewData["Title"] = "PickTeams";
+}
+<br />
+<br />
+<h3 style="text-align:center; text-decoration:underline">Choose the teams you would like to view</h3>
+<br />
+<br />
+<div class="row">
+    <div class="col-sm-12">
+        <form asp-controller="Coaches" asp-action="ViewRecords" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <select asp-for="TeamA" asp-items="Model.FirstTeamList"></select>
+            </div>
+            <div class="form-group">
+                <select asp-for="TeamB" asp-items="Model.SecondTeamList"></select>
+            </div>
+            <br />
+            <p>Please pick which type of graph to display</p>
+            <br />
+            <div class="form-group">
+                <select asp-for="GraphNumber" asp-items="Model.Graphs"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Enter" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+    <div class="col-sm-6">
+
+    </div>
+</div>
+

@@ -280,23 +280,51 @@ namespace db8abase.Controllers
             return items;
         }
 
+        public List<SelectListItem> PopulateGraphs()
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+            int count = 0;
+            List<int> numbers = new List<int>();
+            List<string> graphs = new List<string>() { "Tournament Records", "Wins Line Graph", "Speaker Points" };
+            for(int i = 0; i < graphs.Count(); i++)
+            {
+                count++;
+                numbers.Add(count);
+            }
+            for(int j = 0; j < graphs.Count(); j++)
+            {
+                items.Add(new SelectListItem
+                {
+                    Text = graphs[j],
+                    Value = numbers[j].ToString()
+                });
+            }
+            return items;
+        }
+
         public IActionResult PickTeams()
         {
             List<SelectListItem> firstTeam = PopulateAllTeams();
             List<SelectListItem> secondTeam = PopulateAllTeams();
+            List<SelectListItem> graphs = PopulateGraphs();
 
             CoachesViewReportsViewModel data = new CoachesViewReportsViewModel()
             {
                 FirstTeamList = firstTeam,
                 SecondTeamList = secondTeam,
+                TeamA = "team",
+                TeamB = "team",
+                Graphs = graphs,
+                GraphNumber = "one",
             };
             return View(data);
         }
-
+        [HttpPost]
         public IActionResult ViewRecords(CoachesViewReportsViewModel data)
         {
-            int firstTeamId = Convert.ToInt32(data.FirstTeamList);
-            int secondTeamId = Convert.ToInt32(data.SecondTeamList);
+            int graph = Convert.ToInt32(data.GraphNumber);
+            int firstTeamId = Convert.ToInt32(data.TeamA);
+            int secondTeamId = Convert.ToInt32(data.TeamB);
             IndividualTeam team1 = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == firstTeamId);
             IndividualTeam team2 = _context.IndividualTeam.FirstOrDefault(i => i.IndividualTeamId == secondTeamId);
             var firstModel = new List<SimpleReportViewModel>();
@@ -308,39 +336,79 @@ namespace db8abase.Controllers
             List<CoachesViewReportsViewModel> secondTeamData = new List<CoachesViewReportsViewModel>();
             List<SimpleReportViewModel> firstTeamReports = new List<SimpleReportViewModel>();
             List<SimpleReportViewModel> secondTeamReports = new List<SimpleReportViewModel>();
-            for (int i = 0; i < firstTeamTournament.Count(); i++)
+            if(graph == 3)
             {
-                CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                for (int i = 0; i < firstTeamResults.Count(); i++)
                 {
-                    TournamentName = firstTeamTournament[i].Name,
-                    Wins = firstTeamResults[i].TeamWins,
-                };
-                firstTeamData.Add(teamData);
+                    CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                    {
+                        TournamentName = firstTeamTournament[i].Name,
+                        SpeakerPoints = firstTeamResults[i].SpeakerPoints,
+                    };
+                    firstTeamData.Add(teamData);
+                }
+                for (int j = 0; j < secondTeamResults.Count(); j++)
+                {
+                    CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                    {
+                        TournamentName = secondTeamTournament[j].Name,
+                        SpeakerPoints = secondTeamResults[j].SpeakerPoints,
+                    };
+                    secondTeamData.Add(teamData);
+                }
+                foreach (var item in firstTeamData)
+                {
+                    firstTeamReports.Add(new SimpleReportViewModel
+                    {
+                        DimensionOne = item.TournamentName,
+                        Quantity = item.SpeakerPoints,
+                    });
+                }
+                foreach (var item in secondTeamData)
+                {
+                    secondTeamReports.Add(new SimpleReportViewModel
+                    {
+                        DimensionOne = item.TournamentName,
+                        Quantity = item.SpeakerPoints,
+                    });
+                }
             }
-            foreach (var item in firstTeamData)
+            else
             {
-                firstTeamReports.Add(new SimpleReportViewModel
+                for (int i = 0; i < firstTeamResults.Count(); i++)
                 {
-                    DimensionOne = item.TournamentName,
-                    Quantity = item.Wins,
-                });
-            }
-            for(int j = 0; j < secondTeamTournament.Count(); j++)
-            {
-                CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                    CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                    {
+                        TournamentName = firstTeamTournament[i].Name,
+                        Wins = firstTeamResults[i].TeamWins,
+                    };
+                    firstTeamData.Add(teamData);
+                }
+                foreach (var item in firstTeamData)
                 {
-                    TournamentName = secondTeamTournament[j].Name,
-                    Wins = secondTeamResults[j].TeamWins,
-                };
-                secondTeamData.Add(teamData);
-            }
-            foreach (var item in secondTeamData)
-            {
-                secondTeamReports.Add(new SimpleReportViewModel
+                    firstTeamReports.Add(new SimpleReportViewModel
+                    {
+                        DimensionOne = item.TournamentName,
+                        Quantity = item.Wins,
+                    });
+                }
+                for (int j = 0; j < secondTeamResults.Count(); j++)
                 {
-                    DimensionOne = item.TournamentName,
-                    Quantity = item.Wins,
-                });
+                    CoachesViewReportsViewModel teamData = new CoachesViewReportsViewModel()
+                    {
+                        TournamentName = secondTeamTournament[j].Name,
+                        Wins = secondTeamResults[j].TeamWins,
+                    };
+                    secondTeamData.Add(teamData);
+                }
+                foreach (var item in secondTeamData)
+                {
+                    secondTeamReports.Add(new SimpleReportViewModel
+                    {
+                        DimensionOne = item.TournamentName,
+                        Quantity = item.Wins,
+                    });
+                }
             }
 
             CoachesViewReportsViewModel viewData = new CoachesViewReportsViewModel()

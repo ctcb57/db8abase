@@ -9,6 +9,8 @@ using db8abase.Data;
 using db8abase.Models;
 using db8abase.Models.ViewModels;
 using System.Security.Claims;
+using MimeKit;
+using MailKit.Net.Smtp;
 
 namespace db8abase.Controllers
 {
@@ -32,6 +34,40 @@ namespace db8abase.Controllers
         {
             Tournament tournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             return View(tournament);
+        }
+
+        public void SendPairingEmailToJudge(string lastName, string firstName, string emailAddress, IndividualTeam team1, IndividualTeam team2, Room room)
+        {
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress("Name", "devcodecampsweepstakes@gmail.com"));
+            message.To.Add(new MailboxAddress(lastName, emailAddress));
+            message.Subject = "Judging assignment";
+
+            message.Body = new TextPart("plain")
+            {
+                Text = $@"{firstName} {lastName},
+
+You are scheduled to judge this round.  Your debate will be in {room.RoomNumber}.
+
+You will be judging {team1.IndividualTeamName} and {team2.IndividualTeamName}.
+Let the Tournament Director know if you have any questions.
+
+
+
+Thank you."
+            };
+
+            using (var client = new SmtpClient())
+            {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+
+                client.Connect("smtp.gmail.com", 587, false);
+
+                client.Authenticate("devcodecampsweepstakes", "Cc283192");
+
+                client.Send(message);
+                client.Disconnect(true);
+            }
         }
 
         public IActionResult ViewRoundDetails(int id)
@@ -142,6 +178,12 @@ namespace db8abase.Controllers
             List<IndividualTeam> negativeTeams = GetRoundOneNegativeTeams(id);
             List<Judge> judges = AssignRoundOneJudges(id);
             List<Room> rooms = GetRooms(id);
+            int j = 0;
+            foreach(var judge in judges)
+            {
+                SendPairingEmailToJudge(judge.LastName, judge.FirstName, judge.Email, affirmativeTeams[j], negativeTeams[j], rooms[j]);
+                j++;
+            }
             for(int i = 0; i < affirmativeTeams.Count(); i++)
             {
                 IndividualTeam affTeam = affirmativeTeams[i];
@@ -1133,6 +1175,11 @@ namespace db8abase.Controllers
                     i = -1;
                 }
                 List<Judge> semisJudges = AssignOutRoundJudges(affTeams, negTeams, id, semiFinalsThreshold);
+                int j = 0;
+                foreach(var judge in semisJudges)
+                {
+                    SendPairingEmailToJudge(judge.LastName, judge.FirstName, judge.Email, affTeams[j], negTeams[j], rooms[j]);
+                }
                 PushOutRoundPairing(id, quartersWinners, affTeams, negTeams, semisJudges, rooms);
 
                 PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
@@ -1383,6 +1430,12 @@ namespace db8abase.Controllers
             }
             List<Judge> judges = AssignOutRoundJudges(affTeams, negTeams, id, outRoundThreshold);
             PushOutRoundPairing(id, outRoundsTeams, affTeams, negTeams, judges, rooms);
+            int m = 0;
+            foreach (var judge in judges)
+            {
+                SendPairingEmailToJudge(judge.LastName, judge.FirstName, judge.Email, affTeams[m], negTeams[m], rooms[m]);
+                m++;
+            }
 
             PairingsTabulationViewModel pairingVM = new PairingsTabulationViewModel()
             {

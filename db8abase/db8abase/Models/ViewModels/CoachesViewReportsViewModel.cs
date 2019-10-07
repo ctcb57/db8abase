@@ -12,11 +12,19 @@ namespace db8abase.Models.ViewModels
         public List<SimpleReportViewModel> SecondTeamReports { get; set; }
         public List<IndividualTeam> Teams { get; set; }
 
+        public string TournamentName { get; set; }
+        public int Wins { get; set; }
+        public int SpeakerPoints { get; set; }
         public List<SelectListItem> FirstTeamList { get; set; }
         public List<SelectListItem> SecondTeamList { get; set; }
+        public List<SelectListItem> Graphs { get; set; }
         public List<TournamentResults> Results { get; set; }
 
         public IndividualTeam TeamOne { get; set; }
         public IndividualTeam TeamTwo { get; set; }
+        public string TeamA { get; set; }
+        public string TeamB { get; set; }
+        public string GraphNumber { get; set; }
+
     }
 }
