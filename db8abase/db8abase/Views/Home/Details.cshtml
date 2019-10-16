@@ -37,6 +37,9 @@
             <p>City: @Html.DisplayFor(model => model.Address.City), @Html.DisplayFor(model => model.Address.StateAbbreviation), @Html.DisplayFor(Model => Model.Address.ZipCode)</p>
             <p>Rounds: @Html.DisplayFor(model => model.Tournament.NumberOfRounds)</p>
             <p>Team Limit: @Html.DisplayFor(model => model.Tournament.TeamLimit)</p>
+            <p>
+                <a href="~/Docs/@Html.DisplayFor(Model => Model.Tournament.FilePath)" >Tournament Invitation</a>
+            </p>
             <html>
             <head>
                 <style>
