@@ -4,11 +4,44 @@
 }
 <br />
 <br />
-<h1 style="text-align:center; text-decoration:underline">Round @Model.Round.RoundNumber - @Model.Judge.LastName, @Model.Judge.FirstName</h1>
+@if (Model.Round.RoundNumber == 5)
+{
+    <h1 style="text-align:center; text-decoration: underline">Quarterfinals</h1>
+}
+else if (Model.Round.RoundNumber == 6)
+{
+    <h1 style="text-align:center; text-decoration: underline">Semifinals</h1>
+}
+else if (Model.Round.RoundNumber == 7)
+{
+    <h1 style="text-align:center; text-decoration: underline">Finals</h1>
+}
+else
+{
+    <h1 style="text-align:center; text-decoration: underline">Round @Html.DisplayFor(model => model.Round.RoundNumber)</h1>
+}
+<h3 style="text-align: center">Judge: @Html.DisplayFor(model => model.Judge.FirstName) @Html.DisplayFor(model => model.Judge.LastName)</h3>
 <br />
-<br />
-<p>Enter speaker points using a .5 point increment, indicate the winner, and enter a reason for decision prior to submission</p>
-<p>If this is an elimination debate, speaker points are not required</p>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+            <h4 style="text-align: center">Directions:</h4>
+        </div>
+        <div class="col-sm-3"></div>
+    </div>
+    <div class="row"  style="text-align:center">
+        <div class="col-sm-4">
+            <p>Enter speaker points in .5 points increments</p>
+        </div>
+        <div class="col-sm-4">
+            <p>Choose the appropriate winnner and loser</p>
+        </div>
+        <div class="col-sm-4">
+            <p>Enter a reason for your decision before submitting</p>
+        </div>
+    </div>
+</div>
 <br />
 <form asp-controller="Judges" asp-action="ViewBallot" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -19,58 +52,74 @@
     <input type="hidden" asp-for="Ballot.JudgeId" />
     <input type="hidden" asp-for="Ballot.WinnerId">
     <div class="row">
-        <div class="col-sm-5">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-4">
             <h3 style="text-align:center; text-decoration:underline">Affirmative</h3>
             <h5 style="text-align:center">@Model.AffirmativeTeam.IndividualTeamName</h5>
         </div>
         <div class="col-sm-2"></div>
-        <div class="col-sm-5">
+        <div class="col-sm-4">
             <h3 style="text-align:center; text-decoration:underline">Negative</h3>
             <h5 style="text-align:center">@Model.NegativeTeam.IndividualTeamName</h5>
         </div>
+        <div class="col-sm-1"></div>
     </div>
+    <br />
     <div class="row">
-        <div class="col-sm-5">
-            <div class="form-group">
-                <label asp-for="Ballot.FirstAffSpeakerPoints"></label>
-                <input asp-for="Ballot.FirstAffSpeakerPoints" />
-                <span asp-validation-for="Ballot.FirstAffSpeakerPoints"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ballot.SecondAffSpeakerPoints"></label>
-                <input asp-for="Ballot.SecondAffSpeakerPoints" />
-                <span asp-validation-for="Ballot.SecondAffSpeakerPoints"></span>
-            </div>
+        <div class="col-sm-1"></div>
+        <div class="col-sm-2">
+            <label>1st Affirmative Points:</label>
+        </div>
+        <div class="col-sm-2">
+            <input asp-for="Ballot.FirstAffSpeakerPoints" />
+            <span asp-validation-for="Ballot.FirstAffSpeakerPoints"></span>
         </div>
         <div class="col-sm-2"></div>
-        <div class="col-sm-5">
-            <div class="form-group">
-                <label asp-for="Ballot.FirstNegSpeakerPoints"></label>
-                <input asp-for="Ballot.FirstNegSpeakerPoints" />
-                <span asp-validation-for="Ballot.FirstNegSpeakerPoints"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ballot.SecondNegSpeakerPoints"></label>
-                <input asp-for="Ballot.SecondNegSpeakerPoints" />
-                <span asp-validation-for="Ballot.SecondNegSpeakerPoints"></span>
-            </div>
+        <div class="col-sm-2">
+            <label>1st Negative Points:</label>
         </div>
+        <div class="col-sm-2">
+            <input asp-for="Ballot.FirstNegSpeakerPoints" />
+            <span asp-validation-for="Ballot.FirstNegSpeakerPoints"></span>
+        </div>
+        <div class="col-sm-1"></div>
     </div>
     <div class="row">
         <div class="col-sm-1"></div>
-        <div class="col-sm-5">
-            <div class="form-group">
-                <p>Select the winner for the round</p>
-                <select asp-for="Winner" asp-items="Model.TeamsInRound"></select>
-            </div>
+        <div class="col-sm-2">
+            <label>2nd Affirmative Points:</label>
         </div>
-        <div class="col-sm-5">
-            <div class="form-group">
-                <p>Select the loser for the round</p>
-                <select asp-for="Loser" asp-items="Model.TeamsInRound"></select>
-            </div>
+        <div class="col-sm-2">
+            <input asp-for="Ballot.SecondAffSpeakerPoints" />
+            <span asp-validation-for="Ballot.SecondAffSpeakerPoints"></span>
+        </div>
+        <div class="col-sm-2"></div>
+        <div class="col-sm-2">
+            <label>2nd Negative Points:</label>
+        </div>
+        <div class="col-sm-2">
+            <input asp-for="Ballot.SecondNegSpeakerPoints" />
+            <span asp-validation-for="Ballot.SecondNegSpeakerPoints"></span>
         </div>
         <div class="col-sm-1"></div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-1">
+            <label>Winner:</label>
+        </div>
+        <div class="col-sm-2">
+            <select asp-for="Winner" asp-items="Model.TeamsInRound"></select>
+        </div>
+        <div class="col-sm-3"></div>
+        <div class="col-sm-1">
+            <label>Loser:</label>
+        </div>
+        <div class="col-sm-2">
+            <select asp-for="Loser" asp-items="Model.TeamsInRound"></select>
+        </div>
+        <div class="col-sm-2"></div>
     </div>
     <br />
     <div class="row">
