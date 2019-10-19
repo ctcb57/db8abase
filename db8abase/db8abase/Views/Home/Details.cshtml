@@ -31,15 +31,25 @@
     <div id="myTabContent" class="tab-content">
         <div class="tab-pane fade active show" id="tournamentDetails">
             <br />
-
-            <p>School: @Html.DisplayFor(model => model.School.Name)</p>
-            <p>Address: @Html.DisplayFor(model => model.Address.StreetAddress)</p>
-            <p>City: @Html.DisplayFor(model => model.Address.City), @Html.DisplayFor(model => model.Address.StateAbbreviation), @Html.DisplayFor(Model => Model.Address.ZipCode)</p>
-            <p>Rounds: @Html.DisplayFor(model => model.Tournament.NumberOfRounds)</p>
-            <p>Team Limit: @Html.DisplayFor(model => model.Tournament.TeamLimit)</p>
-            <p>
-                <a href="~/Docs/@Html.DisplayFor(Model => Model.Tournament.FilePath)" >Tournament Invitation</a>
-            </p>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-3">
+                        <p>School: @Html.DisplayFor(model => model.School.Name)</p>
+                        <p>Address: @Html.DisplayFor(model => model.Address.StreetAddress)</p>
+                        <p>City: @Html.DisplayFor(model => model.Address.City), @Html.DisplayFor(model => model.Address.StateAbbreviation), @Html.DisplayFor(Model => Model.Address.ZipCode)</p>
+                    </div>
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-3">
+                        <p>Rounds: @Html.DisplayFor(model => model.Tournament.NumberOfRounds)</p>
+                        <p>Team Limit: @Html.DisplayFor(model => model.Tournament.TeamLimit)</p>
+                        <p>
+                            <a href="~/Docs/@Html.DisplayFor(Model => Model.Tournament.FilePath)">Tournament Invitation</a>
+                        </p>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+            </div>
             <html>
             <head>
                 <style>
@@ -52,7 +62,8 @@
             </head>
             <body>
                     <br />
-                    <h3 style="text-decoration:underline">Tournament Location</h3>
+                    <h3 style="text-align:center; text-decoration:underline">Tournament Location</h3>
+                    <br />
                     @*Div element for the map*@
                     <div id="map"></div>
                     <script>
