@@ -24,11 +24,14 @@
             <tbody>
                 @foreach (var item in Model.Teams)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.IndividualTeamName)
-                        </td>
-                    </tr>
+                    if (item.SchoolId == Model.Coach.SchoolId)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.IndividualTeamName)
+                            </td>
+                        </tr>
+                    }
                 }
             </tbody>
         </table>

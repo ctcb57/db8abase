@@ -500,19 +500,37 @@ namespace db8abase.Controllers
             List<IndividualTeam> teams = new List<IndividualTeam>();
             var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
             var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            var currentTournament = _context.Tournament.FirstOrDefault(t => t.TournamentId == id);
             var entries = _context.TeamEntry.Where(t => t.TournamentId == id).ToList();
             var individualTeams = _context.IndividualTeam.ToList();
-            foreach (var entry in entries)
+            foreach(var entry in entries)
             {
-                for (int i = 0; i < individualTeams.Count; i++)
+                var team = _context.IndividualTeam.FirstOrDefault(x => x.IndividualTeamId == entry.IndividualTeamId);
+                if(team.SchoolId == currentCoach.SchoolId)
                 {
-                    if (entry.IndividualTeamId == individualTeams[i].IndividualTeamId)
-                    {
-                        var locatedTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == individualTeams[i].IndividualTeamId && t.CoachId == currentCoach.CoachId);
-                        teams.Add(locatedTeam);
-                    }
+                    teams.Add(team);
                 }
             }
+
+
+
+
+            //List<IndividualTeam> teams = new List<IndividualTeam>();
+            //var currentUserId = this.User.FindFirstValue(ClaimTypes.NameIdentifier).ToString();
+            //var currentCoach = _context.Coach.FirstOrDefault(t => t.ApplicationUserId == currentUserId);
+            //var entries = _context.TeamEntry.Where(t => t.TournamentId == id).ToList();
+            //var individualTeams = _context.IndividualTeam.ToList();
+            //foreach (var entry in entries)
+            //{
+            //    for (int i = 0; i < individualTeams.Count; i++)
+            //    {
+            //        if (entry.IndividualTeamId == individualTeams[i].IndividualTeamId)
+            //        {
+            //            var locatedTeam = _context.IndividualTeam.FirstOrDefault(t => t.IndividualTeamId == individualTeams[i].IndividualTeamId && t.CoachId == currentCoach.CoachId);
+            //            teams.Add(locatedTeam);
+            //        }
+            //    }
+            //}
             return teams;
         }
 
