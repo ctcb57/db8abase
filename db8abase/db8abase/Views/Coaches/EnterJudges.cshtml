@@ -15,7 +15,10 @@
     <br />
     <h1 style="text-align:center; text-decoration:underline">Enter Judge For Tournament</h1>
     <br />
+    <br />
+    <br />
     <div class="row">
+        <div class="col-sm-4"></div>
         <div class="col-md-4">
             <form asp-controller="Coaches" asp-action="EnterJudges">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -23,19 +26,24 @@
                 <input type="hidden" asp-for="@Model.JudgeEntry.TournamentId" />
                 <input type="hidden" asp-for="@Model.JudgeEntry.JudgeEntryId" />
                 <div class="form-group">
-                    <select asp-for="Judge" asp-items="Model.Judges"></select>
+                    <select class="custom-select" asp-for="Judge" asp-items="Model.Judges">
+                        <option selected="">Select Judge Here</option>
+                    </select>
                 </div>
                 <br />
                 <div class="form-group">
-                    <input type="submit" value="Enter" class="btn btn-primary" />
+                    <input type="submit" value="Enter" class="btn btn-success" />
                 </div>
             </form>
         </div>
+        <div class="col-sm-4"></div>
     </div>
-
-    <div>
-        <a asp-action="Index">Back to List</a>
+    <div class="row">
+        <div class="col-sm-4"></div>
+        <div class="col-sm-4">
+            <a asp-action="TournamentManagement">Back to Tournament Listing</a>
+        </div>
+        <div class="col-sm-4"></div>
     </div>
-
 </body>
 </html>
